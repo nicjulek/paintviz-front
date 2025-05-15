@@ -1,38 +1,86 @@
-.App {
-  text-align: center;
+:root {
+  --cinzaescuro: #565264;
+  --cinzaclaro: #706677;
+  --rosa: #A6808C;
+  --roxo: #CCC9DC;
+  --bege: #CCB7AE;
+  --branco: #D6CFCB;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.navbar.bg-primary {
+  background-color: var(--cinzaescuro) !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.navbar-dark .navbar-nav .nav-link,
+.navbar-dark .navbar-brand {
+  color: var(--branco);
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+.navbar-dark .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+html body { 
+  background-color: var(--roxo);
+ }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--branco);
+  color: var(--cinzaescuro);
+}
+
+header {
   color: white;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
-.App-link {
-  color: #61dafb;
+main {
+  padding: 2rem;
+}
+ 
+button {
+    background-color: var(--rosa);
+    color: var(--branco);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+button:hover {
+  background-color: #A6808C;
+}
+
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: var(--cinzaclaro);
+}
+
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: var(--cinzaclaro);
+  color: white;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
 }
