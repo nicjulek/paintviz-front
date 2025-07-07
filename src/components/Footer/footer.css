@@ -1,0 +1,28 @@
+/* ========== ESTILOS ESPECÍFICOS DO FOOTER ========== */
+
+.footer-container {
+  background-color: var(--paintviz-dark);
+  color: var(--paintviz-light);
+  padding: 1.5rem 0;
+  text-align: center;
+  border-top: 2px solid var(--paintviz-brown);
+  margin-top: auto;
+}
+
+.footer-container p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 576px) {
+  .footer-container {
+    padding: 1rem 0;
+  }
+  
+  .footer-container p {
+    font-size: 0.8rem;
+  }
+}

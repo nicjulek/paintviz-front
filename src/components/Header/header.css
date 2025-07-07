@@ -1,0 +1,67 @@
+/* ========== ESTILOS ESPECÍFICOS DO HEADER ========== */
+
+.navbar-brand {
+  font-weight: 700 !important;
+  letter-spacing: 1px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: color 0.2s ease;
+  font-weight: 500;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: var(--paintviz-light) !important;
+}
+
+.user-section .navbar-text {
+  font-weight: 500;
+}
+
+/* Estilo específico para o botão de sair */
+.user-section .btn-paintviz-light {
+  background-color: var(--paintviz-light) !important;
+  border-color: var(--paintviz-light) !important;
+  color: var(--paintviz-text) !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease;
+}
+
+.user-section .btn-paintviz-light:hover {
+  background-color: var(--paintviz-accent) !important;
+  border-color: var(--paintviz-accent) !important;
+  color: var(--paintviz-text) !important;
+  transform: translateY(-1px);
+}
+
+.user-section .btn-paintviz-light:focus {
+  background-color: var(--paintviz-light) !important;
+  border-color: var(--paintviz-light) !important;
+  color: var(--paintviz-text) !important;
+  box-shadow: 0 0 0 0.2rem rgba(239, 226, 199, 0.5);
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 991px) {
+  .navbar-nav {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    margin-top: 1rem;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.5rem 1rem !important;
+    border-radius: 0.25rem;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .user-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}

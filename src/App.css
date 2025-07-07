@@ -1,86 +1,80 @@
+/* ========== VARIÁVEIS DE CORES DO PAINTVIZ ========== */
 :root {
-  --cinzaescuro: #565264;
-  --cinzaclaro: #706677;
-  --rosa: #A6808C;
-  --roxo: #CCC9DC;
-  --bege: #CCB7AE;
-  --branco: #D6CFCB;
+  --paintviz-brown: #5A402A;
+  --paintviz-light: #EFE2C7;
+  --paintviz-dark: #171515;
+  --paintviz-accent: #DEB887;
+  --paintviz-text: #171515;
 }
 
-.navbar.bg-primary {
-  background-color: var(--cinzaescuro) !important;
+/* ========== CLASSES BOOTSTRAP CUSTOMIZADAS ========== */
+.bg-paintviz-brown {
+  background-color: var(--paintviz-brown) !important;
 }
 
-.navbar-dark .navbar-nav .nav-link,
-.navbar-dark .navbar-brand {
-  color: var(--branco);
+.bg-paintviz-light {
+  background-color: var(--paintviz-light) !important;
 }
 
-.navbar-dark .navbar-toggler-icon {
-  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(255, 255, 255, 0.5)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+.bg-paintviz-dark {
+  background-color: var(--paintviz-dark) !important;
 }
 
-html body { 
-  background-color: var(--roxo);
- }
+.text-paintviz-brown {
+  color: var(--paintviz-brown) !important;
+}
+
+.text-paintviz-light {
+  color: var(--paintviz-light) !important;
+}
+
+.text-paintviz-dark {
+  color: var(--paintviz-dark) !important;
+}
+
+.btn-paintviz-light {
+  background-color: var(--paintviz-light);
+  border-color: var(--paintviz-light);
+  color: var(--paintviz-text);
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-paintviz-light:hover {
+  background-color: var(--paintviz-accent);
+  border-color: var(--paintviz-accent);
+  color: var(--paintviz-text);
+}
+
+.btn-paintviz-brown {
+  background-color: var(--paintviz-brown);
+  border-color: var(--paintviz-brown);
+  color: white;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.btn-paintviz-brown:hover {
+  background-color: var(--paintviz-dark);
+  border-color: var(--paintviz-dark);
+  color: white;
+}
+
+/* ========== ESTILOS GLOBAIS ========== */
+html {
+  background-color: var(--paintviz-light) !important;
+}
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: var(--branco);
-  color: var(--cinzaescuro);
+  background-color: var(--paintviz-light);
+  color: var(--paintviz-text);
 }
 
-header {
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  font-size: 1.5rem;
+/* ========== UTILITÁRIOS ESPECÍFICOS DO PROJETO ========== */
+.shadow-paintviz {
+  box-shadow: 0 4px 6px rgba(90, 64, 42, 0.15) !important;
 }
 
-main {
-  padding: 2rem;
-}
- 
-button {
-    background-color: var(--rosa);
-    color: var(--branco);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-button:hover {
-  background-color: #A6808C;
-}
-
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin: 1rem 0;
-}
-
-.card h2 {
-  margin-top: 0;
-  color: var(--cinzaclaro);
-}
-
-footer {
-  text-align: center;
-  padding: 1rem;
-  background-color: var(--cinzaclaro);
-  color: white;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
+.border-paintviz {
+  border-color: var(--paintviz-brown) !important;
 }
