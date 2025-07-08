@@ -26,6 +26,10 @@ export interface PecaColoridaProps {
   id?: string;
 }
 
+export interface CorPaletaProps {
+  corQuadrado: string;
+}
+
 // Props componente Button
 export interface ButtonProps {
   texto: string;
