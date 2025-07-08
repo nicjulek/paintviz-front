@@ -1,31 +1,28 @@
 import React from 'react';
-import './App.css';
+import { ButtonProps } from '../../types/types';
+import './button.css';
 
-type ButtonType = {
-    texto: string;
-    onClick?: () => void;
-    tipo?: 'button' | 'submit' | 'reset';
-    cor?: string; 
-    tamanho?: 'sm' | 'lg'; 
-    desabilitado?: boolean;
-    icone?: React.ReactNode; 
-}
-
-const Botao: React.FC<ButtonType> = ({
+const Button: React.FC<ButtonProps> = ({
   texto,
   onClick,
   tipo = 'button',
   cor = 'primary',
   tamanho,
   desabilitado = false,
-  icone
+  icone,
+  className = ''
 }) => {
+  const baseClasses = `btn btn-${cor}`;
+  const sizeClass = tamanho ? `btn-${tamanho}` : '';
+  const finalClasses = `${baseClasses} ${sizeClass} ${className}`.trim();
+
   return (
     <button
       type={tipo}
-      className={`btn btn-${cor} ${tamanho ? `btn-${tamanho}` : ''}`}
+      className={finalClasses}
       onClick={onClick}
       disabled={desabilitado}
+      aria-label={texto}
     >
       {icone && <span className="me-2">{icone}</span>}
       {texto}
@@ -33,4 +30,4 @@ const Botao: React.FC<ButtonType> = ({
   );
 };
 
-export default Botao;
+export default Button;

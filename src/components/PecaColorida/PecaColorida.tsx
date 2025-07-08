@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import './pecaColorida.css';
-
-interface PecaColoridaProps {
-  nomePeca: string;
-  corQuadrado: string;
-  corSelecionada: string;
-  onCorChange: (novaCor: string) => void;
-}
+import { PecaColoridaProps } from '../../types/types';
 
 const PecaColorida: React.FC<PecaColoridaProps> = ({
   nomePeca,
@@ -14,7 +8,7 @@ const PecaColorida: React.FC<PecaColoridaProps> = ({
   corSelecionada,
   onCorChange,
 }) => {
-  const [editando, setEditando] = useState(false);
+  const [editando, setEditando] = useState<boolean>(false);
 
   const handleIconeClick = () => {
     setEditando(true);
@@ -47,4 +41,3 @@ const PecaColorida: React.FC<PecaColoridaProps> = ({
 };
 
 export default PecaColorida;
-

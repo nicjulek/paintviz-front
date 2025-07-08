@@ -1,18 +1,14 @@
 import React from 'react';
+import { HeaderProps } from '../../types/types';
 import './header.css';
 
-type UserRole = 'admin' | 'user';
+const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
+  const handleLogout = (): void => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
 
-interface User {
-  name: string;
-  role: UserRole;
-}
-
-interface HeaderProps {
-  user: User | null;
-}
-
-const Header: React.FC<HeaderProps> = ({ user }) => {
   const commonLinks = (
     <>
       <a className="nav-link text-light d-flex align-items-center gap-2" href="/criar-pintura">
@@ -81,7 +77,11 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
                 <span className="navbar-text text-light me-3">
                   Olá, {user.name}
                 </span>
-                <button className="btn btn-paintviz-light rounded-pill d-flex align-items-center gap-2 px-2 py-1 fw-medium">
+                <button 
+                  className="btn btn-paintviz-light rounded-pill d-flex align-items-center gap-2 px-2 py-1 fw-medium"
+                  onClick={handleLogout}
+                  type="button"
+                >
                   <i className="bi bi-box-arrow-right"></i>
                   Sair
                 </button>
