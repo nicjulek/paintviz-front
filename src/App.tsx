@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 import Header from "./components/Header/Header";
@@ -9,6 +9,8 @@ const testeUser = {
   name: 'João Silva',
   role: 'admin' as const //user | admin
 };
+
+
 
 function App() {
   return (
