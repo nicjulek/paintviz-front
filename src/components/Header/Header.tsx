@@ -10,8 +10,21 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   };
 
   const commonLinks = (
+    <a className="navbar-brand fs-4 fw-bold text-light d-flex align-items-center" href="/">
+      <img 
+        src="/icon-b.png" 
+        alt="PaintViz Logo" 
+        width="32" 
+        height="32" 
+        className="me-2"
+      />
+      PaintViz
+    </a>
+  );
+
+  const userLinks = (
     <>
-      <a className="nav-link text-light d-flex align-items-center gap-2" href="/criar-pintura">
+      <a className="nav-link text-light d-flex align-items-center gap-2" href="/pintura">
         <i className="bi bi-brush"></i>
         Criar Carroceria
       </a>
@@ -28,11 +41,11 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
 
   const adminLinks = (
     <>
-      <a className="nav-link text-light d-flex align-items-center gap-2" href="/cadastro-usuario">
+      <a className="nav-link text-light d-flex align-items-center gap-2" href="/atendentes">
         <i className="bi bi-person-circle"></i>
-        Cadastro de Atendente
+        Gestão de Atendentes
       </a>
-      <a className="nav-link text-light d-flex align-items-center gap-2" href="/cadastro-modelo">
+      <a className="nav-link text-light d-flex align-items-center gap-2" href="/modelo">
         <i className="bi bi-file-earmark-text"></i>
         Cadastro de Modelo
       </a>
@@ -42,16 +55,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-paintviz-brown shadow-paintviz">
       <div className="container-fluid px-4">
-        <a className="navbar-brand fs-4 fw-bold text-light d-flex align-items-center" href="/">
-          <img 
-            src="/icon-b.png" 
-            alt="PaintViz Logo" 
-            width="32" 
-            height="32" 
-            className="me-2"
-          />
-          PaintViz
-        </a>
+        {commonLinks}
         
         <button 
           className="navbar-toggler" 
@@ -68,7 +72,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <div className="navbar-nav ms-auto d-flex flex-lg-row gap-3">
             {user?.role === 'admin' && adminLinks}
-            {user && commonLinks}
+            {user && userLinks}
           </div>
           
           {user && (
