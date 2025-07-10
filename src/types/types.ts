@@ -26,6 +26,13 @@ export interface PecaColoridaProps {
   id?: string;
 }
 
+export interface AddCorProps {
+  nomeCor?: string;
+  corQuadrado?: string;
+  onChangeNome?: (novoNome: string) => void;
+  onDelete?: () => void;
+}
+
 export interface CorPaletaProps {
   corQuadrado: string;
 }

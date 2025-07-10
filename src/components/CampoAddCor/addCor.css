@@ -1,0 +1,42 @@
+.campo-cor-container {
+  display: flex;
+  align-items: center;
+  background-color: #e6e6e6;
+  border-radius: 10px;
+  padding: 6px 10px;
+  gap: 10px;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.1);
+  width: fit-content;
+  position: relative;
+}
+
+.input-nome-cor {
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 1rem;
+  width: 150px;
+  outline: none;
+}
+
+.bolinha-cor {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 2px solid #ccc;
+}
+
+.icone-x {
+  color: red;
+  font-size: 2.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
