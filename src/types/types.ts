@@ -26,6 +26,14 @@ export interface PecaColoridaProps {
   id?: string;
 }
 
+export interface InputGenericoProps {
+  titulo: string;
+  placeholder?: string;
+  valor?: string;
+  onChange?: (novoValor: string) => void;
+  type?: string;
+}
+
 export interface AddCorProps {
   nomeCor?: string;
   corQuadrado?: string;

@@ -1,0 +1,23 @@
+.input-generico {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: sans-serif;
+}
+
+.input-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-left: 4px;
+}
+
+.input-campo {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 1rem;
+  outline: none;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+  background-color: white;
+  width: 100%;
+}
