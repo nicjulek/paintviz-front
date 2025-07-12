@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import "./formulariocliente.css";
+import InputGenerico from "../InputGenerico/InputGenerico";
 
 const FormularioCliente: React.FC = () => {
   const [formData, setFormData] = useState({
     opcao: "",
     nome: "",
-    razao: "",
-    cpf: "",
+    razaoSocial: "",
+    documento: "",
     telefone: "",
     email: "",
   });
@@ -22,21 +24,21 @@ const FormularioCliente: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="container mt-4">
-      <h4 className="mb-3">Cadastro de cliente</h4>
+      <h4 className="mb-3">Cadastro de Cliente</h4>
 
-      <div className="mb-3">
+      <div className="mb-3" id="grupo-tipo-cliente">
         <div className="form-check form-check-inline">
           <input
             className="form-check-input"
             type="radio"
-            name="fisico"
+            name="opcao"
             value="Físico"
             checked={formData.opcao === "Físico"}
             onChange={handleChange}
             required
-            id="fisico"
+            id="radio-pessoa-fisica"
           />
-          <label className="form-check-label" htmlFor="fisico">
+          <label className="form-check-label" htmlFor="radio-pessoa-fisica">
             Físico
           </label>
         </div>
@@ -44,89 +46,72 @@ const FormularioCliente: React.FC = () => {
           <input
             className="form-check-input"
             type="radio"
-            name="juridico"
+            name="opcao"
             value="Jurídico"
             checked={formData.opcao === "Jurídico"}
             onChange={handleChange}
             required
-            id="juridico"
+            id="radio-pessoa-juridica"
           />
-          <label className="form-check-label" htmlFor="juridico">
+          <label className="form-check-label" htmlFor="radio-pessoa-juridica">
             Jurídico
           </label>
         </div>
       </div>
 
-      <div className="mb-3">
-        <label htmlFor="nome" className="form-label">Nome</label>
-        <input
-          type="text"
-          className="form-control"
-          id="nome"
-          name="nome"
-          value={formData.nome}
-          onChange={handleChange}
-          required
-        />
-      </div>
+      <InputGenerico
+        titulo="Nome"
+        placeholder="Nome Completo"
+        valor={formData.nome}
+        onChange={(valor) => setFormData(prev => ({ ...prev, nome: valor }))}
+      />
 
       {formData.opcao === "Jurídico" && (
-      <div className="mb-3">
-        <label htmlFor="razao" className="form-label">Razão Social</label>
-        <input
-          type="text"
-          className="form-control"
-          id="razao"
-          name="razao"
-          value={formData.razao}
-          onChange={handleChange}
-          required
+        <InputGenerico
+          titulo="Razão Social"
+          placeholder="Razão Social Completa"
+          valor={formData.razaoSocial}
+          onChange={(valor) => setFormData(prev => ({ ...prev, razaoSocial: valor }))}
         />
-      </div>
-    )}
+      )}
 
-      <div className="mb-3">
-      <label htmlFor="cpf" className="form-label">
-        {formData.opcao === "Jurídico" ? "CNPJ" : "CPF"}
-      </label>
-      <input
-        type="text"
-        className="form-control"
-        id="cpf"
-        name="cpf"
-        value={formData.cpf}
-        onChange={handleChange}
-        required
+      <div className="mb-3" id="grupo-telefone-email">
+        <div className="w-100" id="grupo-documento">
+          <InputGenerico
+            titulo={formData.opcao === "Jurídico" ? "CNPJ" : "CPF"}
+            placeholder={formData.opcao === "Jurídico" ? "00.000.000/0000-00" : "000.000.000-00"}
+            valor={formData.documento}
+            onChange={(valor) => setFormData(prev => ({ ...prev, documento: valor }))}
+          />
+        </div>
+
+        <div className="w-100" id="grupo-telefone">
+          <InputGenerico
+            titulo="Telefone"
+            placeholder="(XX) XXXXX-XXXX"
+            valor={formData.telefone}
+            onChange={(valor) => setFormData(prev => ({ ...prev, telefone: valor }))}
+            type="tel"
+          />
+        </div>
+      </div>
+
+      <InputGenerico
+        titulo="E-mail"
+        type="email"
+        placeholder="exemplo@dominio.com"
+        valor={formData.email}
+        onChange={(valor) => setFormData(prev => ({ ...prev, email: valor }))}
       />
-    </div>
 
-
-      <div className="mb-3">
-        <label htmlFor="telefone" className="form-label">Telefone (número)</label>
-        <input
-          type="number"
-          className="form-control"
-          id="telefone"
-          name="telefone"
-          value={formData.telefone}
-          onChange={handleChange}
-          required
-        />
+      <div className="botoes-form">
+        <button type="button" className="btn-voltar">
+          <i className="bi bi-arrow-left"></i> Voltar
+        </button>
+        <button type="submit" className="btn-salvar">
+          <i className="bi bi-save"></i> Salvar
+        </button>
       </div>
-
-      <div className="mb-3">
-        <label htmlFor="campo5" className="form-label">E-mail</label>
-        <input
-          type="text"
-          className="form-control"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-      </div>
-
     </form>
   );
 };

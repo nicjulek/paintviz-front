@@ -4,6 +4,9 @@ import '../App.css';
 import Header from "../components/Header/Header";
 import Footer from "../components/Footer/Footer";
 import { User } from "../types/types";
+//import FormularioOrdem from "../components/FormularioOrdem/FormularioOrdem";
+//import FormularioCliente from "../components/FormularioCliente/FormularioCliente";
+
 // import axios from "axios";
 
 // const testeUser: User | null = null;
