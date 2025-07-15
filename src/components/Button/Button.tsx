@@ -1,6 +1,5 @@
 import React from 'react';
 import { ButtonProps } from '../../types/types';
-import './button.css';
 
 const Button: React.FC<ButtonProps> = ({
   texto,
@@ -12,9 +11,9 @@ const Button: React.FC<ButtonProps> = ({
   icone,
   className = ''
 }) => {
-  const baseClasses = `btn btn-${cor}`;
+  const corClass = `btn-${cor}`;
   const sizeClass = tamanho ? `btn-${tamanho}` : '';
-  const finalClasses = `${baseClasses} ${sizeClass} ${className}`.trim();
+  const finalClasses = `btn ${corClass} ${sizeClass} ${className}`.trim();
 
   return (
     <button

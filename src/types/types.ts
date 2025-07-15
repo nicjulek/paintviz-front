@@ -50,12 +50,25 @@ export interface ButtonProps {
   texto: string;
   onClick?: () => void;
   tipo?: 'button' | 'submit' | 'reset';
-  cor?: 'primary' | 'secondary' | 'paintviz-light' | 'paintviz-brown';
+  cor?: 
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'light'
+    | 'dark'
+    | 'link'
+    | `outline-${'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'}`
+    | 'paintviz-light'
+    | 'paintviz-brown';
   tamanho?: 'sm' | 'lg';
   desabilitado?: boolean;
   icone?: React.ReactNode;
   className?: string;
 }
+
 
 // Props para o componente Header
 export interface HeaderProps {

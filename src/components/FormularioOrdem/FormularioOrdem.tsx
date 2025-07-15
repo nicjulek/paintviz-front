@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./formularioordem.css";
 import InputGenerico from "../InputGenerico/InputGenerico";
+import Button from "../Button/Button";
 
 const FormularioOrdem: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -104,15 +105,21 @@ const FormularioOrdem: React.FC = () => {
         onChange={(valor) => setFormData(prev => ({ ...prev, data3: valor }))}
       />
 
-      {/* Botões */}
-      <div className="botoes-form">
-        <button type="button" className="btn-voltar">
-          <i className="bi bi-arrow-left"></i> Voltar
-        </button>
-        <button type="submit" className="btn-salvar">
-          <i className="bi bi-save"></i> Salvar
-        </button>
-      </div>
+      <div className="d-flex justify-content-end gap-3 mt-4">
+      <Button
+        tipo="button"
+        texto="Voltar"
+        icone={<i className="bi bi-arrow-left"></i>}
+        cor="secondary"
+        onClick={() => console.log('Voltar')}
+      />
+      <Button
+        tipo="submit"
+        texto="Salvar"
+        icone={<i className="bi bi-save"></i>}
+        cor="success"
+      />
+</div>
     </form>
   );
 };

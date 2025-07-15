@@ -27,7 +27,7 @@ const Pintura: React.FC = () => {
     <div className="d-flex flex-column min-vh-100">
       <Header user={testeUser} />
       <main className="flex-grow-1">
-        { }
+        {}       
       </main>
       <Footer />
     </div>

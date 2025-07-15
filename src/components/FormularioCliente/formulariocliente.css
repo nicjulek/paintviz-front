@@ -48,46 +48,6 @@ h4 {
   font-weight: bold;
 }
 
-.botoes-form {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-}
 
-.btn-voltar {
-  background-color: #007bff; 
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
 
-.btn-voltar:hover {
-  opacity: 0.9;
-  cursor: pointer;
-}
-
-.btn-salvar {
-  background-color: #28a745; 
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.btn-salvar:hover {
-  opacity: 0.9;
-  cursor: pointer;
-}
 
