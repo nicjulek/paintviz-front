@@ -1,0 +1,22 @@
+.cadastro-pecas {
+  background-color: #e6e6e6;
+  padding: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.inputs-linha {
+  display: flex;
+  gap: 1rem;
+  flex-grow: 1;
+  flex-wrap: wrap;
+}
+
+.botao-descartar {
+  white-space: nowrap;
+  font-weight: bold;
+}

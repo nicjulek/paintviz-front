@@ -45,6 +45,13 @@ export interface CorPaletaProps {
   corQuadrado: string;
 }
 
+export interface CadastroPecasProps {
+    nomeModelo?: string;
+    idSVG?: string;
+    onChangeNome?: (novoNome: string) => void;
+    onChangeIdSVG?: (novoIdSVG: string) => void;
+}
+
 // Props componente Button
 export interface ButtonProps {
   texto: string;
