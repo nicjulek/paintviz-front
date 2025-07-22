@@ -76,6 +76,15 @@ export interface ButtonProps {
   className?: string;
 }
 
+// Props para o componente Card Ordem
+export interface CardOrdemProps{
+  idordem: string;
+  status: string;
+  nome: string;
+  entrega: string;
+  imgpintura: string;
+
+}
 
 // Props para o componente Header
 export interface HeaderProps {
