@@ -1,8 +1,47 @@
-.card-status {
-  background-color: #fef4d1;
-  padding: 0.4rem 1rem;
-  border-radius: 1rem;
-  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
-  font-weight: bold;
-  color: #855f00;
+.ordem-card {
+  background-color: #ffffff;
+  width: 25%;
+  margin: 30px;
 }
+
+.ordem-topo{
+  background-color: rgba(213, 192, 160, 1);
+  padding: 1.5rem;
+}
+
+.badge{
+  padding: 15px;
+  font-size: 15px;
+}
+
+.ordem-corpo{
+  padding: 1.5rem;
+  
+}
+
+.ordem-titulo {
+  font-weight: 600;
+  color: #343a40;
+}
+
+.ordem-img {
+  width: 300px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+  border: 1px solid #dee2e6;
+}
+
+.ordem-infos {
+  font-size: 0.95rem;
+  color: #495057;
+}
+
+.card-botoes{
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  gap: 3rem;
+  padding-bottom: 1.5rem;
+}
+
