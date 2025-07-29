@@ -95,4 +95,11 @@ export interface HeaderProps {
   onLogout?: () => void;
 }
 
+//interface para o Item do componente CardItem
+export interface Item {
+  label: string;
+  desc: string;
+}
+
+
 export {};
