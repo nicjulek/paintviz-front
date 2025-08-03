@@ -31,13 +31,25 @@ const FormularioOrdem: React.FC = () => {
     <form onSubmit={handleSubmit} className="container mt-4">
       <h4 className="mb-3">Cadastro de Ordem de Serviço</h4>
 
-      
+
+      <div className="d-flex align-items-center gap-3">  
+      <div className="flex-grow-1">     
       <InputGenerico
         titulo="Cliente"
         placeholder="Nome do Cliente"
         valor={formData.cliente}
         onChange={(valor) => setFormData(prev => ({ ...prev, cliente: valor }))}
       />
+      </div>
+      <div className="align-self-end">
+      <Button
+        tipo="button"
+        texto="Cadastrar Cliente"
+        cor="secondary"
+        onClick={() => console.log('Voltar')}
+      />
+      </div>
+      </div> 
 
       <InputGenerico
         titulo="Usuário"
