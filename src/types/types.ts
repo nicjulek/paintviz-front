@@ -78,7 +78,7 @@ export interface ButtonProps {
 
 // Props para o componente Card Ordem
 export interface CardOrdemProps{
-  idordem: string;
+  idordem: number;
   status: string;
   nome: string;
   entrega: string;

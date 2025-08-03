@@ -1,25 +1,23 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
-import Header from "../components/Header/Header";
-import Footer from "../components/Footer/Footer";
-import { CardOrdemProps, User } from "../types/types";
+import CardOrdem from "../CardOrdem/CardOrdem";
+import { CardOrdemProps } from '../types/types';
 
-
-const testeUser: User = {
-  name: "João",
-  role: "admin" 
+const ordemExemplo: CardOrdemProps = {
+  idordem: 1,
+  status: "Finalizado",
+  nome: "João da Silva",
+  entrega: "2025-08-05",
+  imgpintura: "https://via.placeholder.com/150",
 };
 
 const Galeria: React.FC = () => {
-  
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Header user={testeUser} />
       <main className="flex-grow-1">
-       {} 
+        <CardOrdem {...ordemExemplo} />
       </main>
-      <Footer />
     </div>
   );
 };
