@@ -1,28 +1,147 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
-import { CardOrdemProps, Usuario } from "../types/types";
-//import FormularioOrdem from "../components/FormularioOrdem/FormularioOrdem";
-//import FormularioCliente from "../components/FormularioCliente/FormularioCliente";
-
-
-// import axios from "axios";
-
-// const testeUser: User | null = null;
-
-// const testeHello = async () => {
-//   await axios.get(`${process.env.REACT_APP_API_URL}/hello-world`)
-// }
+import { Carroceria, Peca, UsuarioAutenticado, Cor, Paleta } from "../types/types";
+import ColorPicker from "../components/ColorPicker/ColorPicker";
+import axios from "axios";
 
 const Pintura: React.FC = () => {
-  // console.log(testeHello());
+  const [user, setUser] = useState<UsuarioAutenticado | null>(null);
+  const [carrocerias, setCarrocerias] = useState<Carroceria[]>([]);
+  const [carroceriaSelecionada, setCarroceriaSelecionada] = useState<Carroceria | null>(null);
+  const [pecas, setPecas] = useState<Peca[]>([]);
+  const [pecaSelecionada, setPecaSelecionada] = useState<string | null>(null);
+  const [coresAplicadas, setCoresAplicadas] = useState<{ [key: string]: number }>({});
+  const [tipoVisualizacao, setTipoVisualizacao] = useState<'lateral' | 'traseira' | 'diagonal'>('lateral');
+  const [cores, setCores] = useState<Cor[]>([]);
+  const [paletas, setPaletas] = useState<Paleta[]>([]);
+  const [paletaSelecionada, setPaletaSelecionada] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>('');
+
+  const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
+
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+  };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    carregarDados();
+  }, []);
+
+  const carregarDados = async () => {
+    try {
+      setLoading(true);
+      setError('');
+
+      const [carroceriasRes, paletasRes] = await Promise.all([
+        axios.get(`${API_URL}/carrocerias`, getAuthHeaders()),
+        axios.get(`${API_URL}/paletas`, getAuthHeaders())
+      ]); 
+
+      const carroceriasData: Carroceria[] = carroceriasRes.data;
+      const paletasData: Paleta[] = paletasRes.data;
+
+      setCarrocerias(carroceriasData);
+      setPaletas(paletasData);
+
+      if (carroceriasData.length > 0) {
+        await selecionarCarroceria(carroceriasData[0]);
+      }
+      
+      if (paletasData.length > 0) {
+        await selecionarPaleta(paletasData[0].id_paleta!);
+      }
+      
+    } catch (error: any) {
+      console.error('Erro ao carregar dados:', error);
+      if (error.response?.status === 401) {
+        setError('Sessão expirada. Faça login novamente.');
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      } else {
+        setError('Erro ao carregar dados do servidor.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const selecionarCarroceria = async (carroceria: Carroceria) => {
+    
+  }
+
+  const selecionarPaleta = async (id_paleta: number) => {
+
+  }
+
+  const handlePecaClick = (peca: string) => {
+
+  }
+
+  const handleColorChange = (corId: number) => {
+
+  }
+
+  const getCorHex = (corId: number): string => {
+    const cor = cores.find(c => c.id_cor === corId);
+    return cor ? cor.cod_cor : '#000000';
+  }
+
+  const aplicarCoresNoSvg = (svg: string, coresAplicadas: { [key: string]: number }): string => {
+
+  }
+
+  const criarPecasNoBanco = async (pinturaId: number) => {
+
+  }
+
+  const handleSalvar = async () => {
+
+  }
+
+  const handleDescartar = () => {
+    setCoresAplicadas({});
+    setPecaSelecionada(null);
+    console.log('Cores descartadas');
+  }
+
+  const getSvgAtual = (): string => {
+    if (!carroceriaSelecionada) return '';
+    
+    switch (tipoVisualizacao) {
+      case 'lateral':
+        return carroceriaSelecionada.lateral_svg || '';
+      case 'traseira':
+        return carroceriaSelecionada.traseira_svg || '';
+      case 'diagonal':
+        return carroceriaSelecionada.diagonal_svg || '';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <main className="flex-grow-1">
-       {} 
+       {ColorPicker()}
       </main>
     </div>
   );
+
+
 };
 
 export default Pintura;
