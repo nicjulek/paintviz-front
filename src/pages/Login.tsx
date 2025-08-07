@@ -69,9 +69,37 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-md-5 col-sm-6">
-            <div className="card shadow-lg" style={{ backgroundColor: '#D5C0A0', border: '1px solid white', borderRadius: '15px' }}>
+            <div 
+              className="card shadow-lg" 
+              style={{ 
+                backgroundColor: '#D5C0A0', 
+                border: '2px solid white', 
+                borderRadius: '15px' 
+              }}
+            >
               <div className="card-body p-5">
-                <h2 className="text-center mb-4 fw-bold text-dark">Login</h2>
+                {/* Logo e título */}
+                <div className="text-center mb-4">
+                  <div 
+                    className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{ 
+                      width: '80px', 
+                      height: '80px', 
+                      backgroundColor: 'white' 
+                    }}
+                  >
+                    <img
+                      src="/icon-p.png"
+                      alt="PaintViz Logo"
+                      width="50"
+                      height="50"
+                    />
+                  </div>
+                  <h2 className="fw-bold text-dark mb-2">Bem-vindo(a) de volta!</h2>
+                  <p className="text-dark mb-0" style={{ fontSize: '0.9rem' }}>
+                    Dando vida às suas ideias com cores e formas.
+                  </p>
+                </div>
                 
                 {error && (
                   <div className="alert alert-danger" role="alert">

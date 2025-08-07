@@ -73,7 +73,6 @@ const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* se não estiver logado, sempre redireciona para login */}
         {!user ? (
           <>
             <Route
@@ -86,7 +85,6 @@ const App: React.FC = () => {
             />
           </>
         ) : (
-          // se estiver logado, mostra as páginas com header/footer
           <>
             <Route
               path="/login"
