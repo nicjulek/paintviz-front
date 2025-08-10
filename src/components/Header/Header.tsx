@@ -45,7 +45,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
 
   const adminLinks = (
     <>
-      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/atendentes">
+      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/gestaoatendentes">
         <i className="bi bi-person-circle"></i>
         Gestão de Atendentes
       </Link>
