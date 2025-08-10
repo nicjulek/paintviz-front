@@ -2,9 +2,7 @@ import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
 import CardInfo from "../components/CardInfo/CardInfo";
-import { Container, Row, Col, Card } from 'react-bootstrap';
 import Button from "../components/Button/Button";
-import { FaArrowLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 
 const Ordem: React.FC = () => {
@@ -17,7 +15,6 @@ const Ordem: React.FC = () => {
 
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
 
-    //exemplos para o CardItem
     const cardsData = [
       {
         titulo: "Informações do Cliente",
@@ -69,26 +66,25 @@ const Ordem: React.FC = () => {
         console.log('Gerar Relatório');
     };
 
-return (
-  
-  <div className="d-flex flex-column min-vh-100">
+    return (
+        <div className="d-flex flex-column min-vh-100">
             <main className="flex-grow-1">
-                <Container className="p-4">
-                    <Row>
-                        <Col md={6}>
-                            <Card className="rounded-4 h-100 p-3 shadow">
-                                <Card.Body>
+                <div className="container p-4">
+                    <div className="row">
+                        <div className="col-md-6">
+                            <div className="card rounded-4 h-100 p-3 shadow">
+                                <div className="card-body">
                                     <div className="d-flex justify-content-between align-items-center mb-3">
-                                    <Card.Title as="h2" className="mb-0">Ordem de Serviç<option value=""></option></Card.Title>
-                                    <Button
-                                        texto="Voltar"
-                                        onClick={handleVoltar}
-                                        cor="outline-secondary"
-                                        icone={<i className="bi bi-arrow-left"></i>}
-                                    />
-                                </div>
+                                        <h2 className="card-title mb-0">Ordem de Serviço</h2>
+                                        <Button
+                                            texto="Voltar"
+                                            onClick={handleVoltar}
+                                            cor="outline-secondary"
+                                            icone={<i className="bi bi-arrow-left"></i>}
+                                        />
+                                    </div>
                                     <div className="d-flex flex-column gap-3 mt-4">
-                                         {cardsData.map((card, index) => (
+                                        {cardsData.map((card, index) => (
                                             <CardInfo
                                                 key={index}
                                                 titulo={card.titulo}
@@ -96,35 +92,33 @@ return (
                                             />
                                         ))}
                                     </div>
-                                </Card.Body>
-                            </Card>
-                        </Col>
+                                </div>
+                            </div>
+                        </div>
 
-                        <Col md={6}>
-                            <Card className="rounded-4 h-100 p-3 shadow">
-                                <Card.Body className="d-flex flex-column justify-content-between">
-                                        <Card.Title as="h2" className="mb-0">Boiadeira</Card.Title>
-                                        <img
-
-                                        //PLACEHOLDER DA IMAGEM
-                                            src={productImages[currentImageIndex]}
-                                            alt="Imagem do Produto"
-                                            className="img-fluid rounded"
-                                            style={{ height: 'auto', maxHeight: '400px', width: '100%', objectFit: 'contain' }}
-                                        />
-                                        <div className="d-flex justify-content-center my-3">
+                        <div className="col-md-6">
+                            <div className="card rounded-4 h-100 p-3 shadow">
+                                <div className="card-body d-flex flex-column justify-content-between">
+                                    <h2 className="card-title mb-0">Boiadeira</h2>
+                                    <img
+                                        src={productImages[currentImageIndex]}
+                                        alt="Imagem do Produto"
+                                        className="img-fluid rounded"
+                                        style={{ height: 'auto', maxHeight: '400px', width: '100%', objectFit: 'contain' }}
+                                    />
+                                    <div className="d-flex justify-content-center my-3">
                                         <Button
                                             texto=""
                                             onClick={handleVoltaImg}
                                             cor="light"
-                                            icone=""
+                                            icone={<i className="bi bi-arrow-left-circle-fill"></i>}
                                             className="me-2"
                                         />
                                         <Button
                                             texto=""
                                             onClick={handleProxImg}
                                             cor="light"
-                                            icone=""
+                                            icone={<i className="bi bi-arrow-right-circle-fill"></i>}
                                         />
                                     </div>
                                     <div className="d-flex justify-content-center mt-3">
@@ -140,14 +134,14 @@ return (
                                             cor="primary"
                                         />
                                     </div>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
         </div>
-        );
+    );
 };
 
 export default Ordem;
