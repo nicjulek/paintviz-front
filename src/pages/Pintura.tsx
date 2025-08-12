@@ -80,23 +80,74 @@ const Pintura: React.FC = () => {
   }
 
   const selecionarCarroceria = async (carroceria: Carroceria) => {
-    
+    try {
+      setLoading(true);
+      setError('');
+      setCarroceriaSelecionada(carroceria);
+      
+      // carregar peças da carroceria
+      const response = await axios.get(
+        `${API_URL}/carrocerias/${carroceria.id_carroceria}/pecas`, 
+        getAuthHeaders()
+      );
+      
+      const pecasData: Peca[] = response.data;
+      setPecas(pecasData);
+      
+      // resetar cores aplicadas
+      setCoresAplicadas({});
+      setPecaSelecionada(null);
+      
+    } catch (error: any) {
+      console.error('Erro ao carregar peças:', error);
+      if (error.response?.status === 404) {
+        setError('Peças não encontradas para esta carroceria.');
+        setPecas([]);
+      } else {
+        setError('Erro ao carregar peças da carroceria.');
+      }
+    } finally {
+      setLoading(false);
+    }
   }
 
   const selecionarPaleta = async (id_paleta: number) => {
-
+    try {
+      setPaletaSelecionada(id_paleta);
+      
+      // carregar cores da paleta
+      const response = await axios.get(
+        `${API_URL}/paletas/${id_paleta}/cores`, 
+        getAuthHeaders()
+      );
+      
+      const coresData: Cor[] = response.data;
+      setCores(coresData);
+      
+    } catch (error: any) {
+      console.error('Erro ao carregar cores da paleta:', error);
+      setError('Erro ao carregar cores da paleta.');
+    }
   }
 
-  const handlePecaClick = (peca: string) => {
-
+  const handlePecaClick = (id_peca: string) => {
+    setPecaSelecionada(id_peca);
+    console.log('Peça selecionada:', id_peca);
   }
 
-  const handleColorChange = (corId: number) => {
+  const handleColorChange = (id_cor: number) => {
+     if (pecaSelecionada) {
+      setCoresAplicadas(prev => ({
+        ...prev,
+        [pecaSelecionada]: id_cor
+      }));
 
+      console.log(`Cor ${id_cor} aplicada na peça ${pecaSelecionada}`);
+    }
   }
 
-  const getCorHex = (corId: number): string => {
-    const cor = cores.find(c => c.id_cor === corId);
+  const getCorHex = (id_cor: number): string => {
+    const cor = cores.find(c => c.id_cor === id_cor);
     return cor ? cor.cod_cor : '#000000';
   }
 
