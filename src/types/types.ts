@@ -25,7 +25,7 @@ export interface PecaColoridaProps {
   onCorChange: (novaCor: string) => void;
   id?: string;
 }
-
+//Props para componente InputGenerico
 export interface InputGenericoProps {
   titulo: string;
   placeholder?: string;
