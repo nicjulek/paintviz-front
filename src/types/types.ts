@@ -210,5 +210,10 @@ export interface Item {
   desc: string;
 }
 
+//interface para o componente UploadSVG
+export interface UploadSVGProps {
+  titulo: string;
+}
+
 
 export {};
