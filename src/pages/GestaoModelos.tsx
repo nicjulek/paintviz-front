@@ -1,89 +1,99 @@
-import React from "react";
+import React, { useState } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../App.css';
-import Button from "../components/Button/Button";
+import InputGenerico from '../components/InputGenerico/InputGenerico';
+import Button from '../components/Button/Button';
 
-const modelos = [
-  { nome: 'Boiadeira' },
-];
+interface Modelo {
+  id: number;
+  nome: string;
+}
 
 const GestaoModelos: React.FC = () => {
+  const [modelos, setModelos] = useState<Modelo[]>([
+    { id: 1, nome: 'Boiadeira' },
+    { id: 2, nome: 'Carreta' }
+  ]);
 
-  const handleEditar = (modeloNome: string) => {
-    console.log(`Botão Editar clicado para: ${modeloNome}`);
-    // Lógica para abrir o modal de edição, por exemplo
+  const [termoPesquisa, setTermoPesquisa] = useState('');
+
+  const handlePesquisaChange = (novoValor: string) => {
+    setTermoPesquisa(novoValor);
   };
 
-  const handleExcluir = (modeloNome: string) => {
-    console.log(`Botão Excluir clicado para: ${modeloNome}`);
-    // Lógica para confirmar a exclusão
+  const modelosFiltrados = modelos.filter(modelo =>
+    modelo.nome.toLowerCase().includes(termoPesquisa.toLowerCase())
+  );
+
+  const handleCadastrarModelo = () => {
+    // abrir modal de cadastro
   };
 
-  const handleCadastrar = () => {
-    console.log("Botão Cadastrar Modelo clicado!");
-    // Lógica para abrir o formulário de cadastro de um novo modelo
+  const handleEditar = (modelo: Modelo) => {
+    console.log("Editar", modelo);
+  };
+
+  const handleExcluir = (modeloId: number) => {
+    if (!window.confirm('Tem certeza que deseja excluir este modelo?')) return;
+    setModelos(prev => prev.filter(m => m.id !== modeloId));
   };
 
   return (
-    <div className="container-fluid py-4" style={{ backgroundColor: '#ECE0D1', minHeight: '100vh' }}> 
-      <div className="card shadow-sm mx-auto p-4" style={{ maxWidth: '1000px', backgroundColor: '#F8F6F4', borderRadius: '8px' }}> 
+    <div className="container-fluid p-5" style={{ backgroundColor: '#F5F5DC' }}>
+      <h1 className="mb-4">Gestão de Modelos</h1>
+      <div className="card p-4 rounded-4 shadow-sm" style={{ backgroundColor: '#F0E6D5' }}>
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0">Modelos Cadastrados</h2>
-          <div className="d-flex align-items-center gap-3">
-            <div className="input-group">
-              <span className="input-group-text bg-white border-end-0">
-                <i className="bi bi-search"></i> 
-              </span>
-              <input 
-                type="text" 
-                className="form-control border-start-0" 
-                placeholder="Pesquisar..." 
-                aria-label="Pesquisar" 
-              />
-            </div>
+          <h2 className="mb-0 fs-5">Modelos Cadastrados</h2>
+          <div className="d-flex align-items-center">
+            <InputGenerico
+              titulo="Pesquisar Modelos"
+              placeholder="Nome..."
+              valor={termoPesquisa}
+              onChange={handlePesquisaChange}
+            />
             <Button
               texto="Cadastrar Modelo"
+              onClick={handleCadastrarModelo}
               cor="primary"
-              className="btn btn-primary"
-              onClick={handleCadastrar}
+              icone=""
             />
           </div>
         </div>
+
         <div className="table-responsive">
           <table className="table table-hover bg-white rounded-3 overflow-hidden">
             <thead>
-              <tr style={{ backgroundColor: '#D4C6BA' }}> 
+              <tr>
                 <th className="p-3">NOME</th>
                 <th className="p-3 text-end">AÇÕES</th>
               </tr>
             </thead>
             <tbody>
-              {modelos.length === 0 ? (
-                <tr>
-                  <td colSpan={2} className="text-center p-3">Nenhum modelo cadastrado.</td>
-                </tr>
-              ) : (
-                modelos.map((modelo, index) => (
-                  <tr key={index}>
+              {modelosFiltrados.length > 0 ? (
+                modelosFiltrados.map(modelo => (
+                  <tr key={modelo.id}>
                     <td className="p-3">{modelo.nome}</td>
                     <td className="p-3">
                       <div className="d-flex justify-content-end gap-2">
                         <Button
                           texto="Editar"
-                          cor="primary"
-                          className="btn btn-outline-secondary btn-sm"
-                          onClick={() => handleEditar(modelo.nome)}
+                          onClick={() => handleEditar(modelo)}
+                          cor="secondary"
+                          tamanho="sm"
                         />
                         <Button
                           texto="Excluir"
-                          cor="primary"
-                          className="btn btn-outline-danger btn-sm"
-                          onClick={() => handleExcluir(modelo.nome)}
+                          onClick={() => handleExcluir(modelo.id)}
+                          cor="danger"
+                          tamanho="sm"
                         />
                       </div>
                     </td>
                   </tr>
                 ))
+              ) : (
+                <tr>
+                  <td colSpan={2} className="text-center p-3">Nenhum modelo encontrado.</td>
+                </tr>
               )}
             </tbody>
           </table>
