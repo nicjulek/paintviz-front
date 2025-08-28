@@ -14,26 +14,39 @@ interface Status {
   descricao: string;
 }
 
+interface IOrdemFormData {
+  id_cliente: string;
+  id_usuario_responsavel: string;
+  id_status: string;
+  modelo_veiculo: string;
+  placa_veiculo: string;
+  identificacao_veiculo: string;
+  data_emissao: string;
+  data_entrega: string;
+  data_programada: string;
+}
+
 const FormularioOrdem: React.FC = () => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [status, setStatus] = useState<Status[]>([]);
 
-  const [formData, setFormData] = useState({
-    cliente: "",
-    usuario: "", 
-    status: "",
-    modelo: "",
-    placa: "",
-    identificacao: "",
-    data1: "",
-    data2: "",
-    data3: "",
+  const [formData, setFormData] = useState<IOrdemFormData>({
+    id_cliente: "",              
+    id_usuario_responsavel: "",  
+    id_status: "",               
+    modelo_veiculo: "",          
+    placa_veiculo: "",           
+    identificacao_veiculo: "",   
+    data_emissao: "",            
+    data_entrega: "",            
+    data_programada: "",         
   });
 
   useEffect(() => {
     const idUsuario = localStorage.getItem("id_usuario");
     if (idUsuario) {
-      setFormData((prev) => ({ ...prev, usuario: idUsuario }));
+      
+      setFormData((prev) => ({ ...prev, id_usuario_responsavel: idUsuario }));
     }
   }, []);
 
@@ -55,26 +68,21 @@ const FormularioOrdem: React.FC = () => {
       try {
         const response = await axios.get("http://localhost:3000/status");
         setStatus(response.data);
-      } catch(err){
-        console.error("Erro ao buscar clientes", err);
+      } catch (err) {
+        
+        console.error("Erro ao buscar status", err);
       }
     };
 
     fetchStatus();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dados da ordem:", formData);
+    console.log("Dados da ordem a serem enviados:", formData);
 
     try {
+      
       await axios.post("http://localhost:3000/ordens-servico", formData);
       alert("Ordem cadastrada com sucesso!");
     } catch (error) {
@@ -87,8 +95,8 @@ const FormularioOrdem: React.FC = () => {
     <form onSubmit={handleSubmit} className="container mt-4">
       <h4 className="mb-3">Cadastro de Ordem de Serviço</h4>
 
-      {}
-      <div className="d-flex align-items-center gap-3">
+      {/* Seletor de Cliente */}
+      <div className="d-flex align-items-center gap-3 mb-3">
         <div className="flex-grow-1">
           <div>
             <label className="block mb-1">Cliente</label>
@@ -100,7 +108,8 @@ const FormularioOrdem: React.FC = () => {
               onChange={(opt) =>
                 setFormData((prev) => ({
                   ...prev,
-                  cliente: opt ? String(opt.value) : "",
+                  
+                  id_cliente: opt ? String(opt.value) : "",
                 }))
               }
               placeholder="Selecione um cliente..."
@@ -118,98 +127,87 @@ const FormularioOrdem: React.FC = () => {
         </div>
       </div>
 
-      {}
-      <div className="flex-grow-1">
-          <div>
-            <label className="block mb-1">Status</label>
-            <Select
-              options={status.map((c) => ({
-                value: c.id_status,
-                label: c.descricao,
-              }))}
-              onChange={(opt) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  status: opt ? String(opt.value) : "",
-                }))
-              }
-              placeholder="Selecione um status..."
-              isSearchable
-            />
-          </div>
+      {/* Seletor de Status */}
+      <div className="flex-grow-1 mb-3">
+        <div>
+          <label className="block mb-1">Status</label>
+          <Select
+            options={status.map((s) => ({
+              value: s.id_status,
+              label: s.descricao,
+            }))}
+            onChange={(opt) =>
+              setFormData((prev) => ({
+                ...prev,
+               
+                id_status: opt ? String(opt.value) : "",
+              }))
+            }
+            placeholder="Selecione um status..."
+            isSearchable
+          />
         </div>
-      {}
-      <div className="mb-3" id="grupo-status">
-        <label htmlFor="input-status" className="form-label">
-          Status:
-        </label>
-        <select
-          className="form-control"
-          id="input-status"
-          name="status"
-          value={formData.status || ""}
-          onChange={handleChange}
-          required
-        >
-          <option value="">Selecione o status</option>
-          <option value="pre_ordem">Pré-ordem</option>
-          <option value="em_producao">Em Produção</option>
-          <option value="finalizado">Finalizado</option>
-        </select>
       </div>
+      
 
-      {}
+      {/* Inputs Genéricos */}
       <InputGenerico
-        titulo="Modelo"
+        titulo="Modelo do Veículo"
         placeholder="EX: Scania R450"
-        valor={formData.modelo}
+        valor={formData.modelo_veiculo}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, modelo: valor }))
+          
+          setFormData((prev) => ({ ...prev, modelo_veiculo: valor }))
         }
       />
 
       <InputGenerico
         titulo="Placa do Veículo"
         placeholder="Ex: ABC123"
-        valor={formData.placa}
+        valor={formData.placa_veiculo}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, placa: valor }))
+          
+          setFormData((prev) => ({ ...prev, placa_veiculo: valor }))
         }
       />
 
       <InputGenerico
         titulo="Identificação do Veículo"
         placeholder="Ex: XYZ789012345"
-        valor={formData.identificacao}
+        valor={formData.identificacao_veiculo}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, identificacao: valor }))
+          
+          setFormData((prev) => ({ ...prev, identificacao_veiculo: valor }))
         }
       />
 
       <InputGenerico
         titulo="Data de Emissão"
         placeholder="dd/mm/aa"
-        valor={formData.data1}
+        valor={formData.data_emissao}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, data1: valor }))
+         
+          setFormData((prev) => ({ ...prev, data_emissao: valor }))
         }
       />
 
       <InputGenerico
         titulo="Data de Entrega"
         placeholder="dd/mm/aa"
-        valor={formData.data2}
+        valor={formData.data_entrega}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, data2: valor }))
+          
+          setFormData((prev) => ({ ...prev, data_entrega: valor }))
         }
       />
 
       <InputGenerico
         titulo="Data Programada"
         placeholder="dd/mm/aa"
-        valor={formData.data3}
+        valor={formData.data_programada}
         onChange={(valor) =>
-          setFormData((prev) => ({ ...prev, data3: valor }))
+          
+          setFormData((prev) => ({ ...prev, data_programada: valor }))
         }
       />
 
@@ -234,4 +232,3 @@ const FormularioOrdem: React.FC = () => {
 };
 
 export default FormularioOrdem;
-
