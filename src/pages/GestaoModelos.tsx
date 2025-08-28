@@ -1,106 +1,91 @@
-import React, { useState } from 'react';
-import "bootstrap/dist/css/bootstrap.min.css";
-import InputGenerico from '../components/InputGenerico/InputGenerico';
-import Button from '../components/Button/Button';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Carroceria } from "../types/types";
+import InputGenerico from "../components/InputGenerico/InputGenerico";
+import Button from "../components/Button/Button";
 
-interface Modelo {
-  id: number;
-  nome: string;
-}
+export default function GestaoModelos() {
+  const [modelos, setModelos] = useState<Carroceria[]>([]);
+  const [busca, setBusca] = useState("");
+  const navigate = useNavigate();
 
-const GestaoModelos: React.FC = () => {
-  const [modelos, setModelos] = useState<Modelo[]>([
-    { id: 1, nome: 'Boiadeira' },
-    { id: 2, nome: 'Carreta' }
-  ]);
+  useEffect(() => {
+    axios
+      .get<Carroceria[]>("http://localhost:3000/carroceria") 
+      .then((res) => setModelos(res.data))
+      .catch((err) => console.error("Erro ao buscar modelos:", err));
+  }, []);
 
-  const [termoPesquisa, setTermoPesquisa] = useState('');
-
-  const handlePesquisaChange = (novoValor: string) => {
-    setTermoPesquisa(novoValor);
-  };
-
-  const modelosFiltrados = modelos.filter(modelo =>
-    modelo.nome.toLowerCase().includes(termoPesquisa.toLowerCase())
-  );
-
-  const handleCadastrarModelo = () => {
-    // abrir modal de cadastro
-  };
-
-  const handleEditar = (modelo: Modelo) => {
-    console.log("Editar", modelo);
-  };
-
-  const handleExcluir = (modeloId: number) => {
-    if (!window.confirm('Tem certeza que deseja excluir este modelo?')) return;
-    setModelos(prev => prev.filter(m => m.id !== modeloId));
+  const excluirModelo = async (id?: number) => {
+    if (!id) return;
+    if (window.confirm("Tem certeza que deseja excluir este modelo?")) {
+      try {
+        await axios.delete(`http://localhost:3000/carroceria/${id}`);
+        setModelos((prev) => prev.filter((m) => m.id_carroceria !== id));
+      } catch (err) {
+        console.error("Erro ao excluir modelo:", err);
+      }
+    }
   };
 
   return (
-    <div className="container-fluid p-5" style={{ backgroundColor: '#F5F5DC' }}>
-      <h1 className="mb-4">Gestão de Modelos</h1>
-      <div className="card p-4 rounded-4 shadow-sm" style={{ backgroundColor: '#F0E6D5' }}>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2 className="mb-0 fs-5">Modelos Cadastrados</h2>
-          <div className="d-flex align-items-center">
-            <InputGenerico
-              titulo="Pesquisar Modelos"
-              placeholder="Nome..."
-              valor={termoPesquisa}
-              onChange={handlePesquisaChange}
-            />
-            <Button
-              texto="Cadastrar Modelo"
-              onClick={handleCadastrarModelo}
-              cor="primary"
-              icone=""
-            />
-          </div>
+    <div className="p-6">
+      <h2 className="text-lg font-bold mb-4">Gestão de Modelos</h2>
+
+      <div className="bg-[#d3b991] rounded-xl shadow-lg p-4">
+        <div className="flex justify-between mb-4">
+          <InputGenerico
+          titulo=''
+          type="text"
+          placeholder="Pesquisar..."
+          valor={busca}
+          onChange={(valor) => setBusca(valor)}
+        />
+          <Button
+            texto="Cadastrar Modelo"
+            onClick={() => navigate("/cadastromodelo")}
+            cor="primary"
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+          />
         </div>
 
-        <div className="table-responsive">
-          <table className="table table-hover bg-white rounded-3 overflow-hidden">
-            <thead>
-              <tr>
-                <th className="p-3">NOME</th>
-                <th className="p-3 text-end">AÇÕES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {modelosFiltrados.length > 0 ? (
-                modelosFiltrados.map(modelo => (
-                  <tr key={modelo.id}>
-                    <td className="p-3">{modelo.nome}</td>
-                    <td className="p-3">
-                      <div className="d-flex justify-content-end gap-2">
-                        <Button
-                          texto="Editar"
-                          onClick={() => handleEditar(modelo)}
-                          cor="secondary"
-                          tamanho="sm"
-                        />
-                        <Button
-                          texto="Excluir"
-                          onClick={() => handleExcluir(modelo.id)}
-                          cor="danger"
-                          tamanho="sm"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={2} className="text-center p-3">Nenhum modelo encontrado.</td>
+        <table className="w-full border-collapse rounded-lg overflow-hidden">
+          <thead>
+            <tr className="bg-gray-200 text-left">
+              <th className="p-2">Nome</th>
+              <th className="p-2">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {modelos
+              .filter((m) =>
+                m.nome_modelo.toLowerCase().includes(busca.toLowerCase())
+              )
+              .map((modelo) => (
+                <tr key={modelo.id_carroceria} className="border-b">
+                  <td className="p-2">{modelo.nome_modelo}</td>
+                  <td className="p-2">
+                    <Button
+                      texto="Editar"
+                      cor="primary"
+                      onClick={() =>
+                        navigate(`/editar-modelo/${modelo.id_carroceria}`)
+                      }
+                      className="bg-yellow-500 text-white px-3 py-1 rounded mr-2"
+                    />
+                    <Button
+                      texto="Excluir"
+                      cor="danger"
+                      onClick={() => excluirModelo(modelo.id_carroceria)}
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                    />
+                  </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-};
-
-export default GestaoModelos;
+}
