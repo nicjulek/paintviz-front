@@ -32,6 +32,8 @@ export interface InputGenericoProps {
   valor?: string;
   onChange?: (novoValor: string) => void;
   type?: string;
+  required?: boolean; 
+  disabled?: boolean; 
 }
 
 export interface AddCorProps {

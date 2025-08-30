@@ -7,17 +7,21 @@ const InputGenerico: React.FC<InputGenericoProps> = ({
     placeholder = '',
     valor = '',
     onChange,
-    type = 'text'
+    type = 'text',
+    required = false, 
+    disabled = false  
 }) => {
     return(
         <div className = "input-generico">
-            <label className="input-label">{titulo}:</label>
+            <label className="input-label">{titulo}{required && '*'}:</label>
             <input
                 type={type}
                 className="input-campo"
                 placeholder={placeholder}
                 value={valor}
                 onChange={(e) => onChange?.(e.target.value)}
+                required={required} 
+                disabled={disabled} 
             />
         </div>
     );

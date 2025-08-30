@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Select from "react-select";
 import axios from "axios";
 import InputGenerico from "../InputGenerico/InputGenerico";
@@ -24,6 +24,7 @@ interface IOrdemFormData {
   data_emissao: string;
   data_entrega: string;
   data_programada: string;
+  numero_box: string;
 }
 
 const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ idDaOrdemParaEditar }) => {
@@ -40,7 +41,24 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
     data_emissao: "",
     data_entrega: "",
     data_programada: "",
+    numero_box: "",
   });
+
+  const isPreOrdem = useMemo(() => formData.id_status === '1', [formData.id_status]);
+  const isEmProducao = useMemo(() => formData.id_status === '3', [formData.id_status]);
+
+  const handleStatusChange = (selectedOption: any) => {
+    const newStatusId = selectedOption ? String(selectedOption.value) : "";
+    
+    setFormData(prev => {
+      const newNumeroBox = newStatusId === '3' ? prev.numero_box : "";
+      return {
+        ...prev,
+        id_status: newStatusId,
+        numero_box: newNumeroBox,
+      };
+    });
+  };
 
   useEffect(() => {
     const idUsuario = localStorage.getItem("id_usuario");
@@ -94,16 +112,42 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
     }
   }, [idDaOrdemParaEditar]); 
 
+  //handleSubmit inclui as validações antes de enviar
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // --- SEÇÃO DE VALIDAÇÃO ---
+    if (isPreOrdem) {
+      if (!formData.data_emissao || !formData.modelo_veiculo || !formData.id_cliente || !formData.id_status) {
+        alert("Para Pré-Ordem, preencha todos os campos obrigatórios: Cliente, Status, Modelo e Data de Emissão.");
+        return; // Para a submissão
+      }
+    } else { // Validação para outros status
+      const camposObrigatorios = [
+        formData.id_cliente,
+        formData.id_status,
+        formData.modelo_veiculo,
+        formData.placa_veiculo,
+        formData.data_emissao,
+        formData.data_entrega,
+        formData.data_programada,
+      ];
+
+      if (isEmProducao) {
+        camposObrigatorios.push(formData.numero_box);
+      }
+
+      if (camposObrigatorios.some(field => !field)) {
+        alert("Preencha todos os campos obrigatórios para este status.");
+        return; // Para a submissão
+      }
+    }
+
     try {
       if (idDaOrdemParaEditar) {
-        // Requisição put para atualizar a ordem existente
         await axios.put(`http://localhost:3000/ordens-servico/${idDaOrdemParaEditar}`, formData);
         alert("Ordem atualizada com sucesso!");
       } else {
-        // Requisição post para criar uma nova ordem
         await axios.post("http://localhost:3000/ordens-servico", formData);
         alert("Ordem cadastrada com sucesso!");
       }
@@ -154,31 +198,36 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
 
       {/* Seletor de Status */}
       <div className="flex-grow-1 mb-3">
-        <div>
-          <label className="block mb-1">Status</label>
-          <Select
-            options={status.map((s) => ({
-              value: s.id_status,
-              label: s.descricao,
-            }))}
-            onChange={(opt) =>
-              setFormData((prev) => ({
-                ...prev,
-               
-                id_status: opt ? String(opt.value) : "",
-              }))
-            }
-            placeholder="Selecione um status..."
-            isSearchable
-          />
-        </div>
+        <label className="block mb-1">Status *</label>
+        <Select
+          options={status.map((s) => ({ value: s.id_status, label: s.descricao }))}
+          onChange={handleStatusChange} // Usa o handler customizado
+          value={status.map(s => ({ value: s.id_status, label: s.descricao })).find(s => s.value === Number(formData.id_status))}
+          placeholder="Selecione um status..."
+          isSearchable
+        />
       </div>
       
+      {/*eletor para Número do Box */}
+      <div className="flex-grow-1 mb-3">
+          <label className="block mb-1">Número do Box {isEmProducao && '*'}</label>
+          <Select
+              options={Array.from({ length: 20 }, (_, i) => ({
+                  value: `${i + 1}`,
+                  label: `${i + 1}`
+              }))}
+              value={formData.numero_box ? { value: formData.numero_box, label: formData.numero_box } : null}
+              onChange={(opt) => setFormData(prev => ({ ...prev, numero_box: opt ? opt.value : "" }))}
+              placeholder="Selecione um box..."
+              isDisabled={!isEmProducao} // Desabilitado se não estiver "Em Produção"
+          />
+      </div>
 
       {/* Inputs Genéricos */}
       <InputGenerico
         titulo="Modelo do Veículo"
         placeholder="EX: Scania R450"
+        required
         valor={formData.modelo_veiculo}
         onChange={(valor) =>
           
@@ -189,6 +238,8 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       <InputGenerico
         titulo="Placa do Veículo"
         placeholder="Ex: ABC123"
+        required={!isPreOrdem} // Obrigatório, exceto para pré-ordem
+        disabled={isPreOrdem}  // Desabilitado para pré-ordem
         valor={formData.placa_veiculo}
         onChange={(valor) =>
           
@@ -199,6 +250,7 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       <InputGenerico
         titulo="Identificação do Veículo"
         placeholder="Ex: XYZ789012345"
+        disabled={isPreOrdem}  
         valor={formData.identificacao_veiculo}
         onChange={(valor) =>
           
@@ -209,6 +261,7 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       <InputGenerico
         titulo="Data de Emissão"
         placeholder="dd/mm/aa"
+        required
         valor={formData.data_emissao}
         onChange={(valor) =>
          
@@ -219,6 +272,8 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       <InputGenerico
         titulo="Data de Entrega"
         placeholder="dd/mm/aa"
+        required={!isPreOrdem} 
+        disabled={isPreOrdem}  
         valor={formData.data_entrega}
         onChange={(valor) =>
           
@@ -229,12 +284,14 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       <InputGenerico
         titulo="Data Programada"
         placeholder="dd/mm/aa"
+        required={!isPreOrdem} 
+        disabled={isPreOrdem}  
         valor={formData.data_programada}
         onChange={(valor) =>
           
           setFormData((prev) => ({ ...prev, data_programada: valor }))
         }
-      />
+      />    
 
       {/* Botões */}
       <div className="d-flex justify-content-end gap-3 mt-4">
