@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button/Button";
 
 const CadastroAtendentes: React.FC = () => {
+  const { id } = useParams<{ id?: string }>(); 
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
@@ -15,8 +16,25 @@ const CadastroAtendentes: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as { onUserAdded?: () => void } | undefined;
+
+  useEffect(() => {
+    if (id) {
+      const buscarAtendente = async () => {
+        setLoading(true);
+        try {
+          const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
+          const response = await axios.get(`${API_URL}/usuarios/${id}`);
+          setUsuario(response.data.name); 
+        } catch (error) {
+          console.error("Erro ao buscar dados do atendente:", error);
+          setError("Não foi possível carregar os dados para edição.");
+        } finally {
+          setLoading(false);
+        }
+      };
+      buscarAtendente();
+    }
+  }, [id]);
 
   const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,18 +51,26 @@ const CadastroAtendentes: React.FC = () => {
     try {
       const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
 
-      await axios.post(`${API_URL}/usuarios`, { nome: usuario, senha });
+      if (id) {
+        await axios.put(`${API_URL}/usuarios/${id}`, { nome: usuario, senha });
+        setSuccess("Usuário atualizado com sucesso!");
+      } else {
+        await axios.post(`${API_URL}/usuarios`, { nome: usuario, senha });
+        setSuccess("Usuário cadastrado com sucesso!");
+      }
 
-      setSuccess("Usuário cadastrado com sucesso!");
       setUsuario("");
       setSenha("");
       setConfirmarSenha("");
 
-      if (state?.onUserAdded) state.onUserAdded();
     } catch (error: any) {
-      if (error.response?.data?.error) setError(error.response.data.error);
-      else if (error.response?.data?.details) setError(error.response.data.details.join(", "));
-      else setError("Erro ao conectar com o servidor");
+      if (error.response?.data?.error) {
+        setError(error.response.data.error);
+      } else if (error.response?.data?.details) {
+        setError(error.response.data.details.join(", "));
+      } else {
+        setError("Erro ao conectar com o servidor");
+      }
     } finally {
       setLoading(false);
     }
@@ -55,14 +81,14 @@ const CadastroAtendentes: React.FC = () => {
   return (
     <div className="container mt-5">
       <div className="card shadow-lg p-4" style={{ backgroundColor: "#D5C0A0" }}>
-        <h3 className="fw-bold mb-3">Cadastrar novo usuário</h3>
+        <h3 className="fw-bold mb-3">{id ? "Editar Usuário" : "Cadastrar Novo Usuário"}</h3>
 
         {error && <div className="alert alert-danger">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
 
         <form onSubmit={handleCadastro}>
           <div className="mb-3">
-            <label className="form-label fw-bold">Usuário</label>
+            <label className="form-label fw-bold">Nome</label>
             <input
               type="text"
               className="form-control"
@@ -102,7 +128,7 @@ const CadastroAtendentes: React.FC = () => {
 
           <Button
             tipo="submit"
-            texto={loading ? "Cadastrando..." : "Cadastrar"}
+            texto={loading ? "Carregando..." : id ? "Atualizar" : "Cadastrar"}
             cor="primary"
             tamanho="lg"
             className="w-100 fw-bold mb-2"

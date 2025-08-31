@@ -14,18 +14,20 @@ const GestaoAtendentes: React.FC = () => {
 
     const navigate = useNavigate(); 
 
+    const buscarUsuarios = async () => {
+        try {
+            setCarregando(true);
+            const response = await axios.get('http://localhost:3333/usuarios'); 
+            setUsuarios(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar os usuários:", error);
+            setErro("Não foi possível carregar a lista de usuários.");
+        } finally {
+            setCarregando(false);
+        }
+    };
+
     useEffect(() => {
-        const buscarUsuarios = async () => {
-            try {
-                const response = await axios.get('http://localhost:3333/usuarios'); 
-                setUsuarios(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar os usuários:", error);
-                setErro("Não foi possível carregar a lista de usuários.");
-            } finally {
-                setCarregando(false);
-            }
-        };
         buscarUsuarios();
     }, []);
 
@@ -38,21 +40,11 @@ const GestaoAtendentes: React.FC = () => {
         .filter(atendente => atendente.name.toLowerCase().includes(termoPesquisa.toLowerCase()));
 
     const handleCadastrarAtendente = () => {
-        navigate('/cadastroatendentes', {
-            state: {
-                onUserAdded: () => {
-                    axios.get('http://localhost:3333/usuarios')
-                        .then(res => setUsuarios(res.data))
-                        .catch(err => console.error(err));
-                }
-            }
-        });
+        navigate('/cadastroatendentes');
     };
 
     const handleEditar = (atendente: User) => {
-        navigate(`/cadastroatendentes/${atendente.id}`, {
-            state: { userId: atendente.id, onUserAdded: handleCadastrarAtendente }
-        });
+        navigate(`/cadastroatendentes/${atendente.id}`);
     };
 
     const handleExcluir = async (atendenteId: string) => {
@@ -60,8 +52,7 @@ const GestaoAtendentes: React.FC = () => {
 
         try {
             await axios.delete(`http://localhost:3333/usuarios/${atendenteId}`);
-            setUsuarios(prev => prev.filter(user => user.id !== atendenteId));
-            alert('Atendente excluído com sucesso!');
+            buscarUsuarios();
         } catch (error) {
             console.error('Erro ao excluir atendente:', error);
             alert('Não foi possível excluir o atendente.');
@@ -98,7 +89,6 @@ const GestaoAtendentes: React.FC = () => {
                         <thead>
                             <tr>
                                 <th className="p-3">NOME</th>
-                                <th className="p-3">STATUS</th> 
                                 <th className="p-3 text-end">AÇÕES</th>
                             </tr>
                         </thead>
@@ -107,7 +97,6 @@ const GestaoAtendentes: React.FC = () => {
                                 atendentesFiltrados.map(atendente => (
                                     <tr key={atendente.id}>
                                         <td className="p-3">{atendente.name}</td>
-                                        <td className="p-3">{atendente.role === 'user' ? 'Ativo' : 'Inativo'}</td>
                                         <td className="p-3">
                                             <div className="d-flex justify-content-end gap-2">
                                                 <Button
@@ -128,7 +117,7 @@ const GestaoAtendentes: React.FC = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={3} className="text-center p-3">Nenhum atendente encontrado.</td>
+                                    <td colSpan={2} className="text-center p-3">Nenhum atendente encontrado.</td>
                                 </tr>
                             )}
                         </tbody>
