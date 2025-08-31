@@ -3,23 +3,21 @@ import axios from 'axios';
 import Button from '../components/Button/Button'; 
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGenerico from '../components/InputGenerico/InputGenerico';
-import { User, UserRole } from '../types/types';
+import { User } from '../types/types';
+import { useNavigate } from 'react-router-dom'; 
 
 const GestaoAtendentes: React.FC = () => {
-
-    // Estado para armazenar todos os usuários da API
     const [usuarios, setUsuarios] = useState<User[]>([]);
     const [carregando, setCarregando] = useState<boolean>(true);
     const [erro, setErro] = useState<string | null>(null);
-
-    // Estado para a pesquisa
     const [termoPesquisa, setTermoPesquisa] = useState('');
+
+    const navigate = useNavigate(); 
 
     useEffect(() => {
         const buscarUsuarios = async () => {
             try {
-                //URL placeholder
-                const response = await axios.get('http://localhost:3000/usuarios');
+                const response = await axios.get('http://localhost:3333/usuarios'); 
                 setUsuarios(response.data);
             } catch (error) {
                 console.error("Erro ao buscar os usuários:", error);
@@ -28,7 +26,6 @@ const GestaoAtendentes: React.FC = () => {
                 setCarregando(false);
             }
         };
-
         buscarUsuarios();
     }, []);
 
@@ -36,31 +33,34 @@ const GestaoAtendentes: React.FC = () => {
         setTermoPesquisa(novoValor);
     };
 
-    //Filtra por role e depois pela pesquisa por nome
     const atendentesFiltrados = usuarios
         .filter(user => user.role === 'user')
         .filter(atendente => atendente.name.toLowerCase().includes(termoPesquisa.toLowerCase()));
 
     const handleCadastrarAtendente = () => {
-        // Lógica para abrir o modal de cadastro
+        navigate('/cadastroatendentes', {
+            state: {
+                onUserAdded: () => {
+                    axios.get('http://localhost:3333/usuarios')
+                        .then(res => setUsuarios(res.data))
+                        .catch(err => console.error(err));
+                }
+            }
+        });
     };
 
     const handleEditar = (atendente: User) => {
-        // Lógica para abrir o modal de edição
+        navigate(`/cadastroatendentes/${atendente.id}`, {
+            state: { userId: atendente.id, onUserAdded: handleCadastrarAtendente }
+        });
     };
 
-    //Excluir usuário atendente
     const handleExcluir = async (atendenteId: string) => {
-        if (!window.confirm('Tem certeza que deseja excluir este atendente?')) {
-            return;
-        }
+        if (!window.confirm('Tem certeza que deseja excluir este atendente?')) return;
 
         try {
-            // Requisição DELETE para a rota 
-            await axios.delete(`http://localhost:3000/usuarios/${atendenteId}`);
-
-            setUsuarios(prevUsuarios => prevUsuarios.filter(user => user.id !== atendenteId));
-
+            await axios.delete(`http://localhost:3333/usuarios/${atendenteId}`);
+            setUsuarios(prev => prev.filter(user => user.id !== atendenteId));
             alert('Atendente excluído com sucesso!');
         } catch (error) {
             console.error('Erro ao excluir atendente:', error);
@@ -68,13 +68,8 @@ const GestaoAtendentes: React.FC = () => {
         }
     };
 
-    if (carregando) {
-        return <div className="text-center p-5">Carregando usuários...</div>;
-    }
-
-    if (erro) {
-        return <div className="text-center p-5 text-danger">Erro: {erro}</div>;
-    }
+    if (carregando) return <div className="text-center p-5">Carregando usuários...</div>;
+    if (erro) return <div className="text-center p-5 text-danger">Erro: {erro}</div>;
 
     return (
         <div className="container-fluid p-5" style={{ backgroundColor: '#F5F5DC' }}>
@@ -97,6 +92,7 @@ const GestaoAtendentes: React.FC = () => {
                         />
                     </div>
                 </div>
+
                 <div className="table-responsive">
                     <table className="table table-hover bg-white rounded-3 overflow-hidden">
                         <thead>
@@ -111,9 +107,7 @@ const GestaoAtendentes: React.FC = () => {
                                 atendentesFiltrados.map(atendente => (
                                     <tr key={atendente.id}>
                                         <td className="p-3">{atendente.name}</td>
-                                        <td className="p-3">
-                                            {atendente.role === 'user' ? 'Ativo' : 'Inativo'}
-                                        </td>
+                                        <td className="p-3">{atendente.role === 'user' ? 'Ativo' : 'Inativo'}</td>
                                         <td className="p-3">
                                             <div className="d-flex justify-content-end gap-2">
                                                 <Button
