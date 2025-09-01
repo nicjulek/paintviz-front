@@ -6,7 +6,6 @@ import Agenda from './pages/Agenda';
 import Header from './components/Header/Header';
 import { User } from "./types/types";
 import Footer from './components/Footer/Footer';
-import FormularioOrdem from './components/FormularioOrdem/FormularioOrdem';
 
 const testeUser: User = {
   name: "João",
@@ -23,8 +22,7 @@ const App: React.FC = () => {
           <Route path="/galeria" element={<Galeria />} />
           <Route path="/agenda" element={<Agenda />} />
           
-        </Routes>
-        <FormularioOrdem></FormularioOrdem>
+        </Routes>        
         <Footer />
       </div>
     </BrowserRouter>
