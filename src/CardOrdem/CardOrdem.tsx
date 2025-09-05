@@ -3,17 +3,12 @@ import './cardordem.css';
 import Button from '../components/Button/Button';
 import { CardOrdemProps } from '../types/types';
 
-type Status =
-  | 'Em produção'
-  | 'Pendente'
-  | 'Finalizado'
-  | 'Cancelado';
-
-const statusToBootstrap: Record<Status, string> = {
+const statusToBootstrap: Record<string, string> = {
   'Em produção': 'primary',
   'Pendente': 'warning',
   'Finalizado': 'success',
-  'Cancelado': 'danger'
+  'Cancelado': 'danger',
+  'Pré-ordem': 'info',
 };
 
 const CardOrdem: React.FC<CardOrdemProps> = ({
@@ -23,7 +18,14 @@ const CardOrdem: React.FC<CardOrdemProps> = ({
   entrega,
   imgpintura
 }) => {
-  const corBadge = statusToBootstrap[status as Status]; 
+
+  const corBadge = statusToBootstrap[status] || 'secondary';  
+
+  const formatarData = (data: string | null) => {
+    if (!data) return 'Não definida'; // Lida com datas nulas
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+  };
 
   return (
     <div className="ordem-card shadow-sm mb-4 rounded bg-white">
@@ -40,14 +42,14 @@ const CardOrdem: React.FC<CardOrdemProps> = ({
       <div className="ordem-corpo d-flex justify-content-between align-items-start mb-3 flex-wrap">
         <div className="d-flex flex-column gap-1 ordem-infos">
           <span><strong>Nome:</strong> {nome}</span>
-          <span><strong>Entrega:</strong> {entrega}</span>
+          <span><strong>Entrega programada:</strong> {formatarData(entrega)}</span>
         </div>
-        <img
-          src={imgpintura}
-          alt="Imagem da carroceria"
-          className="img-thumbnail ordem-img"
+        <div
+          className="img-thumbnail ordem-img" 
+          dangerouslySetInnerHTML={{ __html: imgpintura }}
         />
       </div>
+     
 
       <div className=" card-botoes ">
         <Button

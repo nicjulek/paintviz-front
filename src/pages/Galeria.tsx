@@ -6,7 +6,7 @@ import '../App.css';
 import CardOrdem from "../CardOrdem/CardOrdem";
 import { CardOrdemProps } from '../types/types';
 
-interface StatusOption {
+interface SelectOption { 
     value: string;
     label: string;
 }
@@ -16,10 +16,15 @@ const Galeria: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [statusOptions, setStatusOptions] = useState<StatusOption[]>([]);
-    const [selectedStatus, setSelectedStatus] = useState<StatusOption | null>(null);
-
+    const [statusOptions, setStatusOptions] = useState<SelectOption[]>([]);
+    const [selectedStatus, setSelectedStatus] = useState<SelectOption | null>(null);
     const [searchTerm, setSearchTerm] = useState<string>('');
+
+    const [sortOrder, setSortOrder] = useState<SelectOption | null>(null);
+    const sortOptions: SelectOption[] = [
+        { value: 'recente', label: 'Mais Recentes' },
+        { value: 'antiga', label: 'Mais Antigas' },
+    ];
 
     useEffect(() => {
         const fetchStatusOptions = async () => {
@@ -48,6 +53,9 @@ const Galeria: React.FC = () => {
                 if (searchTerm) {
                     params.append('nomeCliente', searchTerm);
                 }
+                if (sortOrder) {
+                    params.append('ordenarPorData', sortOrder.value);
+                }
                 const queryString = params.toString();
                 
                 const url = `http://localhost:3000/ordens-servico/galeria${queryString ? `?${queryString}` : ''}`;
@@ -63,7 +71,7 @@ const Galeria: React.FC = () => {
         };
 
         fetchOrdens();
-    }, [selectedStatus, searchTerm]); 
+    }, [selectedStatus, searchTerm, sortOrder]);
 
     if (error) {
         return <div className="container mt-5 text-center"><h2 className="text-danger">{error}</h2></div>;
@@ -75,17 +83,7 @@ return (
             <h1 className="mb-4">Galeria de Ordens de Serviço</h1>
 
             <div className="row mb-4 align-items-end">
-                <div className="col-md-4">
-                    <label htmlFor="status-filter" className="form-label">Filtrar por Status</label>
-                    <Select
-                        id="status-filter"
-                        options={statusOptions}
-                        value={selectedStatus}
-                        onChange={(option) => setSelectedStatus(option)}
-                        placeholder="Todos os status"
-                        isClearable
-                    />
-                </div>
+
                 <div className="col-md-4">
                     <label htmlFor="name-search" className="form-label">Pesquisar por Nome do Cliente</label>
                     <input
@@ -97,7 +95,33 @@ return (
                         placeholder="Digite o nome do cliente..."
                     />
                 </div>
+
+                <div className="col-md-4">
+                    <label htmlFor="status-filter" className="form-label">Filtrar por Status</label>
+                    <Select
+                        id="status-filter"
+                        options={statusOptions}
+                        value={selectedStatus}
+                        onChange={(option) => setSelectedStatus(option)}
+                        placeholder="Todos os status"
+                        isClearable
+                    />
+                </div>             
+
+                <div className="col-md-4">
+                    <label htmlFor="sort-order" className="form-label">Ordenar por Data Programada</label>
+                    <Select
+                        id="sort-order"
+                        options={sortOptions}
+                        value={sortOrder}
+                        onChange={(option) => setSortOrder(option)}
+                        placeholder="Padrão"
+                        isClearable
+                    />
+                </div>
             </div>
+
+
 
             {loading ? (
                 <div className="text-center"><h2>Carregando Ordens...</h2></div>
