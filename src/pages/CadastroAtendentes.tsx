@@ -4,10 +4,11 @@ import "../App.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button/Button";
+import { Usuario } from "../types/types";
 
 const CadastroAtendentes: React.FC = () => {
   const { id } = useParams<{ id?: string }>(); 
-  const [usuario, setUsuario] = useState("");
+  const [nome, setNome] = useState(""); 
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,8 +24,8 @@ const CadastroAtendentes: React.FC = () => {
         setLoading(true);
         try {
           const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
-          const response = await axios.get(`${API_URL}/usuarios/${id}`);
-          setUsuario(response.data.name); 
+          const response = await axios.get<Usuario>(`${API_URL}/usuarios/${id}`);
+          setNome(response.data.nome); 
         } catch (error) {
           console.error("Erro ao buscar dados do atendente:", error);
           setError("Não foi possível carregar os dados para edição.");
@@ -52,16 +53,17 @@ const CadastroAtendentes: React.FC = () => {
       const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
 
       if (id) {
-        await axios.put(`${API_URL}/usuarios/${id}`, { nome: usuario, senha });
+        await axios.put(`${API_URL}/usuarios/${id}`, { nome, senha });
         setSuccess("Usuário atualizado com sucesso!");
       } else {
-        await axios.post(`${API_URL}/usuarios`, { nome: usuario, senha });
+        await axios.post(`${API_URL}/usuarios`, { nome, senha });
         setSuccess("Usuário cadastrado com sucesso!");
       }
 
-      setUsuario("");
+      setNome("");
       setSenha("");
       setConfirmarSenha("");
+      navigate('/gestaoatendentes');
 
     } catch (error: any) {
       if (error.response?.data?.error) {
@@ -76,11 +78,11 @@ const CadastroAtendentes: React.FC = () => {
     }
   };
 
-  const handleVoltar = () => navigate(-1);
+  const handleVoltar = () => navigate('/gestaoatendentes');
 
   return (
     <div className="container mt-5">
-      <div className="card shadow-lg p-4" style={{ backgroundColor: "#D5C0A0" }}>
+      <div className="card shadow-lg p-4" style={{ backgroundColor: 'var(--paintviz-accent)' }}>
         <h3 className="fw-bold mb-3">{id ? "Editar Usuário" : "Cadastrar Novo Usuário"}</h3>
 
         {error && <div className="alert alert-danger">{error}</div>}
@@ -93,8 +95,8 @@ const CadastroAtendentes: React.FC = () => {
               type="text"
               className="form-control"
               placeholder="Digite o nome do usuário"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
               required
               disabled={loading}
             />
@@ -132,7 +134,7 @@ const CadastroAtendentes: React.FC = () => {
             cor="primary"
             tamanho="lg"
             className="w-100 fw-bold mb-2"
-            desabilitado={loading || !usuario || !senha || !confirmarSenha}
+            desabilitado={loading || !nome || !senha || !confirmarSenha}
           />
 
           <Button

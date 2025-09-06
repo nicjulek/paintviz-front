@@ -101,5 +101,20 @@ export interface Item {
   desc: string;
 }
 
+// Interfaces para gestão e cadastro de atendentes
+export interface Usuario {
+  id_usuario: number;
+  nome: string;
+  senha?: string;
+  isAdmin?: boolean;
+}
+
+// Interface de usuário autenticado
+export interface UsuarioAutenticado {
+  id_usuario: number;
+  nome: string;
+  isAdmin: boolean;
+}
+
 
 export {};

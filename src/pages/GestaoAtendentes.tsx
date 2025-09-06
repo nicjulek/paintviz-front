@@ -3,11 +3,11 @@ import axios from 'axios';
 import Button from '../components/Button/Button'; 
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGenerico from '../components/InputGenerico/InputGenerico';
-import { User } from '../types/types';
+import { Usuario } from '../types/types';
 import { useNavigate } from 'react-router-dom'; 
 
 const GestaoAtendentes: React.FC = () => {
-    const [usuarios, setUsuarios] = useState<User[]>([]);
+    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
     const [carregando, setCarregando] = useState<boolean>(true);
     const [erro, setErro] = useState<string | null>(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
@@ -36,22 +36,23 @@ const GestaoAtendentes: React.FC = () => {
     };
 
     const atendentesFiltrados = usuarios
-        .filter(user => user.role === 'user')
-        .filter(atendente => atendente.name.toLowerCase().includes(termoPesquisa.toLowerCase()));
+        .filter(user => !user.isAdmin) 
+        .filter(atendente => atendente.nome.toLowerCase().includes(termoPesquisa.toLowerCase()));
 
     const handleCadastrarAtendente = () => {
         navigate('/cadastroatendentes');
     };
 
-    const handleEditar = (atendente: User) => {
-        navigate(`/cadastroatendentes/${atendente.id}`);
+    const handleEditar = (atendente: Usuario) => {
+        navigate(`/cadastroatendentes/${atendente.id_usuario}`);
     };
 
-    const handleExcluir = async (atendenteId: string) => {
+    const handleExcluir = async (id?: number) => {
+        if (!id) return;
         if (!window.confirm('Tem certeza que deseja excluir este atendente?')) return;
 
         try {
-            await axios.delete(`http://localhost:3333/usuarios/${atendenteId}`);
+            await axios.delete(`http://localhost:3333/usuarios/${id}`);
             buscarUsuarios();
         } catch (error) {
             console.error('Erro ao excluir atendente:', error);
@@ -63,12 +64,12 @@ const GestaoAtendentes: React.FC = () => {
     if (erro) return <div className="text-center p-5 text-danger">Erro: {erro}</div>;
 
     return (
-        <div className="container-fluid p-5" style={{ backgroundColor: '#F5F5DC' }}>
-            <h1 className="mb-4">Gestão de Atendentes</h1>
-            <div className="card p-4 rounded-4 shadow-sm" style={{ backgroundColor: '#F0E6D5' }}>
+        <div className="container-fluid p-5" style={{ backgroundColor: 'var(--paintviz-light)' }}>
+           <h1 className="mb-4" style={{ color: 'var(--paintviz-text)' }}>Gestão de Atendentes</h1>
+            <div className="card p-4 rounded-4 shadow-sm" style={{ backgroundColor: 'var(--paintviz-accent)' }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="mb-0 fs-5">Atendentes Cadastrados</h2>
-                    <div className="d-flex align-items-center">
+                    <h2 className="mb-0 fs-5"style={{ color: 'var(--paintviz-text)' }}>Atendentes Cadastrados</h2>
+                    <div className="d-flex align-items-end gap-2">
                         <InputGenerico
                             titulo="Pesquisar Atendentes"
                             placeholder="Nome..."
@@ -79,7 +80,7 @@ const GestaoAtendentes: React.FC = () => {
                             texto="Cadastrar Atendente"
                             onClick={handleCadastrarAtendente}
                             cor="primary"
-                            icone=""
+                            className="btn-alinhado"
                         />
                     </div>
                 </div>
@@ -94,9 +95,9 @@ const GestaoAtendentes: React.FC = () => {
                         </thead>
                         <tbody>
                             {atendentesFiltrados.length > 0 ? (
-                                atendentesFiltrados.map(atendente => (
-                                    <tr key={atendente.id}>
-                                        <td className="p-3">{atendente.name}</td>
+                                atendentesFiltrados.map((atendente, index) => (
+                                    <tr key={atendente.id_usuario || index}>
+                                        <td className="p-3">{atendente.nome}</td>
                                         <td className="p-3">
                                             <div className="d-flex justify-content-end gap-2">
                                                 <Button
@@ -107,7 +108,7 @@ const GestaoAtendentes: React.FC = () => {
                                                 />
                                                 <Button
                                                     texto="Excluir"
-                                                    onClick={() => atendente.id && handleExcluir(atendente.id)}
+                                                    onClick={() => handleExcluir(atendente.id_usuario)}
                                                     cor="danger"
                                                     tamanho="sm"
                                                 />
