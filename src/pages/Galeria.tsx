@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import Select from 'react-select'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -42,38 +42,35 @@ const Galeria: React.FC = () => {
         fetchStatusOptions();
     }, []);
 
+    // CORREÇÃO 1: Definimos a função de busca UMA VEZ com useCallback.
+    const fetchOrdens = useCallback(async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (selectedStatus) params.append('status', selectedStatus.value);
+            if (searchTerm) params.append('nomeCliente', searchTerm);
+            if (sortOrder) params.append('ordenarPorData', sortOrder.value);
+            
+            const queryString = params.toString();
+            const url = `http://localhost:3000/ordens-servico/galeria${queryString ? `?${queryString}` : ''}`;
+
+            const response = await axios.get(url);
+            setOrdens(response.data);
+            setError(null); // Limpa erros antigos em caso de sucesso
+        } catch (err) {
+            console.error("Erro ao buscar ordens de serviço:", err);
+            setError("Não foi possível carregar as ordens de serviço.");
+        } finally {
+            setLoading(false);
+        }
+    }, [selectedStatus, searchTerm, sortOrder]); 
+
+    // CORREÇÃO 1: O useEffect agora apenas CHAMA a função.
     useEffect(() => {
-        const fetchOrdens = async () => {
-            setLoading(true);
-            try {
-                const params = new URLSearchParams();
-                if (selectedStatus) {
-                    params.append('status', selectedStatus.value);
-                }
-                if (searchTerm) {
-                    params.append('nomeCliente', searchTerm);
-                }
-                if (sortOrder) {
-                    params.append('ordenarPorData', sortOrder.value);
-                }
-                const queryString = params.toString();
-                
-                const url = `http://localhost:3000/ordens-servico/galeria${queryString ? `?${queryString}` : ''}`;
-
-                const response = await axios.get(url);
-                setOrdens(response.data);
-            } catch (err) {
-                console.error("Erro ao buscar ordens de serviço:", err);
-                setError("Não foi possível carregar as ordens de serviço.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchOrdens();
-    }, [selectedStatus, searchTerm, sortOrder]);
+    }, [fetchOrdens]); // A dependência agora é na própria função
 
-    if (error) {
+    if (error && ordens.length === 0) { // Mostra erro em tela cheia só se for o erro inicial
         return <div className="container mt-5 text-center"><h2 className="text-danger">{error}</h2></div>;
     }
 
@@ -134,7 +131,7 @@ return (
                     {ordens.length > 0 ? (
                         ordens.map((ordem) => (
                             <div className="col-lg-6 col-md-12" key={ordem.idordem}>
-                                <CardOrdem {...ordem} />
+                                <CardOrdem {...ordem} onOrdemUpdate={fetchOrdens} />   
                             </div>
                         ))
                     ) : (

@@ -85,7 +85,7 @@ export interface CardOrdemProps{
   nome: string;
   entrega: string;
   imgpintura: string;
-
+  onOrdemUpdate?: () => void;
 }
 
 // Props para o componente Header
