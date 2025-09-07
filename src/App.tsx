@@ -25,6 +25,7 @@ const App: React.FC = () => {
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/gestaoatendentes" element={<GestaoAtendentes/>} />
           <Route path="/cadastroatendentes" element={<CadastroAtendentes/>} />
+          <Route path="/cadastroatendentes/:id" element={<CadastroAtendentes />} />
         </Routes>
         <Footer />
       </div>

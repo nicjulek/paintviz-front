@@ -17,7 +17,8 @@ const GestaoAtendentes: React.FC = () => {
     const buscarUsuarios = async () => {
         try {
             setCarregando(true);
-            const response = await axios.get('http://localhost:3333/usuarios'); 
+            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
+            const response = await axios.get(API_URL + '/usuarios'); 
             setUsuarios(response.data);
         } catch (error) {
             console.error("Erro ao buscar os usuários:", error);
@@ -52,7 +53,8 @@ const GestaoAtendentes: React.FC = () => {
         if (!window.confirm('Tem certeza que deseja excluir este atendente?')) return;
 
         try {
-            await axios.delete(`http://localhost:3333/usuarios/${id}`);
+            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
+            await axios.delete(`${API_URL}/usuarios/${id}`);
             buscarUsuarios();
         } catch (error) {
             console.error('Erro ao excluir atendente:', error);

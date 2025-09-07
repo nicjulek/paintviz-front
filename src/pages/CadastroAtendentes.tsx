@@ -7,88 +7,100 @@ import Button from "../components/Button/Button";
 import { Usuario } from "../types/types";
 
 const CadastroAtendentes: React.FC = () => {
-  const { id } = useParams<{ id?: string }>(); 
-  const [nome, setNome] = useState(""); 
+  const { id } = useParams<{ id?: string }>();
+  const [nome, setNome] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
+  const [success, setSuccess] = useState("");
 
   const navigate = useNavigate();
+
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
 
   useEffect(() => {
     if (id) {
       const buscarAtendente = async () => {
         setLoading(true);
         try {
-          const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
           const response = await axios.get<Usuario>(`${API_URL}/usuarios/${id}`);
-          setNome(response.data.nome); 
+          setNome(response.data.nome);
         } catch (error) {
           console.error("Erro ao buscar dados do atendente:", error);
-          setError("Não foi possível carregar os dados para edição.");
+          setErro("Não foi possível carregar os dados para edição.");
         } finally {
           setLoading(false);
         }
       };
       buscarAtendente();
     }
-  }, [id]);
+  }, [id, API_URL]);
 
-  const handleCadastro = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
+    setErro("");
     setSuccess("");
+    setLoading(true);
 
-    if (senha !== confirmarSenha) {
-      setError("As senhas não coincidem");
-      setLoading(false);
-      return;
+    if (!id) {
+      if (!senha) {
+        setErro("A senha é obrigatória para novos usuários.");
+        setLoading(false);
+        return;
+      }
+      if (senha !== confirmarSenha) {
+        setErro("As senhas não conferem.");
+        setLoading(false);
+        return;
+      }
+    }
+
+    const payload: any = { nome };
+    if (!id || senha) {
+      payload.senha = senha;
     }
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
-
       if (id) {
-        await axios.put(`${API_URL}/usuarios/${id}`, { nome, senha });
-        setSuccess("Usuário atualizado com sucesso!");
+        await axios.put(`${API_URL}/usuarios/${id}`, payload);
+        setSuccess("Atendente atualizado com sucesso!");
       } else {
-        await axios.post(`${API_URL}/usuarios`, { nome, senha });
-        setSuccess("Usuário cadastrado com sucesso!");
+        await axios.post(`${API_URL}/usuarios`, payload);
+        setSuccess("Atendente cadastrado com sucesso!");
       }
-
-      setNome("");
-      setSenha("");
-      setConfirmarSenha("");
-      navigate('/gestaoatendentes');
-
-    } catch (error: any) {
-      if (error.response?.data?.error) {
-        setError(error.response.data.error);
-      } else if (error.response?.data?.details) {
-        setError(error.response.data.details.join(", "));
+      navigate("/gestaoatendentes");
+    } catch (err: any) {
+      if (err.response?.data?.error) {
+        setErro(err.response.data.error);
       } else {
-        setError("Erro ao conectar com o servidor");
+        setErro("Erro ao salvar atendente. Tente novamente.");
       }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleVoltar = () => navigate('/gestaoatendentes');
+  const toggleShowPassword = () => setShowPassword(!showPassword);
 
   return (
     <div className="container mt-5">
-      <div className="card shadow-lg p-4" style={{ backgroundColor: 'var(--paintviz-accent)' }}>
-        <h3 className="fw-bold mb-3">{id ? "Editar Usuário" : "Cadastrar Novo Usuário"}</h3>
+      <div
+        className="card shadow-lg p-4"
+        style={{ backgroundColor: "var(--paintviz-accent)" }}
+      >
+        <h3
+          className="fw-bold mb-3"
+          style={{ color: "var(--paintviz-text)" }}
+        >
+          {id ? "Editar Atendente" : "Cadastrar Novo Atendente"}
+        </h3>
 
-        {error && <div className="alert alert-danger">{error}</div>}
+        {erro && <div className="alert alert-danger">{erro}</div>}
         {success && <div className="alert alert-success">{success}</div>}
 
-        <form onSubmit={handleCadastro}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label fw-bold">Nome</label>
             <input
@@ -102,17 +114,26 @@ const CadastroAtendentes: React.FC = () => {
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-bold">Senha</label>
-            <input
-              type={showPassword ? "text" : "password"}
-              className="form-control"
-              placeholder="Digite a senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-              required
+          <div className="mb-3 d-flex align-items-center">
+            <div className="flex-grow-1">
+              <label className="form-label fw-bold">Senha</label>
+              <input
+                type={showPassword ? "text" : "password"}
+                className="form-control"
+                placeholder="Digite a senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+                disabled={loading}
+              />
+            </div>
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm ms-2 mt-4"
+              onClick={toggleShowPassword}
               disabled={loading}
-            />
+            >
+              {showPassword ? "Ocultar" : "Mostrar"}
+            </button>
           </div>
 
           <div className="mb-3">
@@ -123,26 +144,30 @@ const CadastroAtendentes: React.FC = () => {
               placeholder="Confirme a senha"
               value={confirmarSenha}
               onChange={(e) => setConfirmarSenha(e.target.value)}
-              required
               disabled={loading}
             />
           </div>
 
           <Button
-            tipo="submit"
-            texto={loading ? "Carregando..." : id ? "Atualizar" : "Cadastrar"}
-            cor="primary"
-            tamanho="lg"
-            className="w-100 fw-bold mb-2"
-            desabilitado={loading || !nome || !senha || !confirmarSenha}
-          />
+          tipo="submit"
+          texto={loading ? "Carregando..." : id ? "Atualizar" : "Cadastrar"}
+          icone={
+            loading ? (
+              <span className="spinner-border spinner-border-sm me-2"></span>
+            ) : undefined
+          }
+          cor="primary"
+          tamanho="lg"
+          className="w-100 fw-bold mb-2"
+          desabilitado={loading || !nome}
+        />
 
           <Button
             tipo="button"
             texto="Voltar"
             cor="secondary"
             className="w-100 fw-bold"
-            onClick={handleVoltar}
+            onClick={() => navigate("/gestaoatendentes")}
             desabilitado={loading}
           />
         </form>
