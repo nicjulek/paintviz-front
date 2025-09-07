@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Pintura from './pages/Pintura';
 import Galeria from './pages/Galeria';
 import Agenda from './pages/Agenda';
+import Ordem from './pages/Ordem';
 import Header from './components/Header/Header';
 import { User } from "./types/types";
 import Footer from './components/Footer/Footer';
@@ -21,6 +22,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Pintura />} />
           <Route path="/galeria" element={<Galeria />} />
           <Route path="/agenda" element={<Agenda />} />
+          <Route path="/ordem/:id" element={<Ordem />} />
           
         </Routes>        
         <Footer />

@@ -27,7 +27,7 @@ interface IOrdemFormData {
   numero_box: string;
 }
 
-const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ idDaOrdemParaEditar }) => {
+const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number; onUpdateSuccess?: () => void }> = ({ idDaOrdemParaEditar, onUpdateSuccess }) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [status, setStatus] = useState<Status[]>([]);
   
@@ -147,6 +147,7 @@ const FormularioOrdem: React.FC<{ idDaOrdemParaEditar?: string | number }> = ({ 
       if (idDaOrdemParaEditar) {
         await axios.put(`http://localhost:3000/ordens-servico/${idDaOrdemParaEditar}`, formData);
         alert("Ordem atualizada com sucesso!");
+        onUpdateSuccess?.();
       } else {
         await axios.post("http://localhost:3000/ordens-servico", formData);
         alert("Ordem cadastrada com sucesso!");

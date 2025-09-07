@@ -3,6 +3,7 @@ import axios from 'axios';
 import Select from 'react-select'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css';
+import { Link } from 'react-router-dom';
 import CardOrdem from "../CardOrdem/CardOrdem";
 import { CardOrdemProps } from '../types/types';
 
@@ -42,7 +43,6 @@ const Galeria: React.FC = () => {
         fetchStatusOptions();
     }, []);
 
-    // CORREÇÃO 1: Definimos a função de busca UMA VEZ com useCallback.
     const fetchOrdens = useCallback(async () => {
         setLoading(true);
         try {
@@ -65,10 +65,10 @@ const Galeria: React.FC = () => {
         }
     }, [selectedStatus, searchTerm, sortOrder]); 
 
-    // CORREÇÃO 1: O useEffect agora apenas CHAMA a função.
+
     useEffect(() => {
         fetchOrdens();
-    }, [fetchOrdens]); // A dependência agora é na própria função
+    }, [fetchOrdens]); 
 
     if (error && ordens.length === 0) { // Mostra erro em tela cheia só se for o erro inicial
         return <div className="container mt-5 text-center"><h2 className="text-danger">{error}</h2></div>;
@@ -130,9 +130,9 @@ return (
                 <div className="row">
                     {ordens.length > 0 ? (
                         ordens.map((ordem) => (
-                            <div className="col-lg-6 col-md-12" key={ordem.idordem}>
-                                <CardOrdem {...ordem} onOrdemUpdate={fetchOrdens} />   
-                            </div>
+                            <Link to={`/ordem/${ordem.idordem}`} key={ordem.idordem} className="col-lg-6 col-md-12 text-decoration-none">
+                                <CardOrdem {...ordem} onOrdemUpdate={fetchOrdens} />
+                            </Link>
                         ))
                     ) : (
                         <div className="col-12 text-center">
