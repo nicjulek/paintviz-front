@@ -91,6 +91,8 @@ export interface Peca {
   id_cor?: number;
   id_pintura: number;
   id_carroceria: number;
+  cor_atual: string;
+  cor_inicial: string;
 }
 
 // ========= ORDEM DE SERVICO =========
@@ -210,5 +212,23 @@ export interface Item {
   desc: string;
 }
 
+export interface ColorPickerProps {
+  value: string;
+  onColorChange: (color: string) => void;
+}
+
+export interface CorInput {
+    nome_cor: string;
+    cod_cor: string;
+}
+
+export interface PaletaModalProps {
+    show: boolean;
+    onClose: () => void;
+    onSave: (nomePaleta: string, cores: CorInput[]) => void;
+    initialNome?: string;
+    initialCores?: CorInput[];
+    isEdit?: boolean;
+}
 
 export {};

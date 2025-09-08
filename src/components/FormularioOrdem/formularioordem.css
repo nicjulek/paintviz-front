@@ -23,5 +23,17 @@ h4 {
   color: var(--paintviz-dark);
 }
 
+/* Força fundo branco e texto escuro no select e nas opções */
+.select-status,
+.select-status option {
+  background-color: #fff !important;
+  color: #222 !important;
+}
 
+/* Para navegadores que ignoram option color, use este hack: */
+.select-status:focus {
+  background-color: #fff !important;
+  color: #222 !important;
+  border-color: #C4AE78 !important;
+}
 

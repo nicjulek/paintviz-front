@@ -78,3 +78,45 @@ body {
 .border-paintviz {
   border-color: var(--paintviz-brown) !important;
 }
+
+.transition-width {
+  transition: width 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+
+.tipo-visualizacao-btn:hover:not(:disabled) {
+    background: #5A402A !important;
+    color: #fff !important;
+}
+
+/* Corrige o fundo e cor do select e dropdown */
+.form-control,
+.form-select {
+  background: #fff !important;
+  color: #222 !important;
+}
+
+.form-select option {
+  background: #fff !important;
+  color: #222 !important;
+}
+
+/* Exemplo para select de status */
+.select-status {
+  background: #fff !important;
+  color: #222 !important;
+}
+.select-status option {
+  background: #fff !important;
+  color: #222 !important;
+}
+
+.card-ordem-hover:hover, .card-ordem-hover:focus {
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+  transform: translateY(-4px) scale(1.03);
+  border: 2px solid #bfa46a;
+}

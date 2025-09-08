@@ -1,9 +1,8 @@
 import { HexColorPicker } from "react-colorful";
-import { useState } from "react";
+import { ColorPickerProps } from "../../types/types";
 
-const ColorPicker = () => {
-  const [color, setColor] = useState("#aabbcc");
-  return <HexColorPicker color={color} onChange={setColor} />;
+const ColorPicker = ({ value, onColorChange }: ColorPickerProps) => {
+  return <HexColorPicker color={value} onChange={onColorChange} />;
 };
 
-export default ColorPicker
+export default ColorPicker;
