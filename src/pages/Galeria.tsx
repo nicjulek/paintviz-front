@@ -4,7 +4,7 @@ import '../App.css';
 import CardOrdem from "../components/CardOrdem/CardOrdem";
 import StatusModal from "../modals/StatusModal";
 import PrioriModal from "../modals/PrioriModal";
-import { useGaleria, statusList } from "../hooks/useGaleria";
+import { useGaleria, statusList, getStatusNome } from "../hooks/useGaleria";
 
 const CARDS_PER_PAGE = 16;
 
@@ -240,26 +240,25 @@ const Galeria: React.FC = () => {
         <div className="row gx-4 gy-4 justify-content-center" style={{ marginLeft: 0, marginRight: 0 }}>
           {paginatedOrdens.map(ordem => (
             <div
-              className="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center"
+              className="col-12 col-sm-10 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center"
               key={ordem.id_ordem_servico}
+              style={{ minWidth: 260, maxWidth: 420, width: "100%" }}
             >
-              <div style={{ width: "100%", maxWidth: 380, minWidth: 220 }}>
-                <CardOrdem
-                  id_ordem_servico={ordem.id_ordem_servico}
-                  identificacao_veiculo={ordem.identificacao_veiculo}
-                  status={ordem.id_status}
-                  nome_cliente={
-                    ordem.cliente?.pessoa_fisica?.nome ||
-                    ordem.cliente?.pessoa_juridica?.empresa ||
-                    ordem.nome_cliente ||
-                    ""
-                  }
-                  data_entrega={ordem.data_entrega}
-                  id_pintura={ordem.id_pintura}
-                  onAlterarStatus={() => openStatusModal(ordem)}
-                  onAlterarPrioridade={() => openPrioriModal(ordem)}
-                />
-              </div>
+              <CardOrdem
+                id_ordem_servico={ordem.id_ordem_servico}
+                identificacao_veiculo={ordem.identificacao_veiculo}
+                status={getStatusNome(ordem.id_status)}
+                nome_cliente={
+                  ordem.cliente?.pessoa_fisica?.nome ||
+                  ordem.cliente?.pessoa_juridica?.empresa ||
+                  ordem.nome_cliente ||
+                  ""
+                }
+                data_entrega={ordem.data_entrega}
+                id_pintura={ordem.id_pintura}
+                onAlterarStatus={() => openStatusModal(ordem)}
+                onAlterarPrioridade={() => openPrioriModal(ordem)}
+              />
             </div>
           ))}
         </div>

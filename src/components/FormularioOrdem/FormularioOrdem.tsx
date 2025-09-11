@@ -18,10 +18,13 @@ const FormularioOrdem: React.FC = () => {
     handleVoltar,
     handleSubmit,
     fetchData,
-    isPreOrdem
+    isPreOrdem,
+    isEdicao
   } = useFormOrdem();
 
-  if (bloqueado) {
+  console.log("Acesso bloqueado?", bloqueado, "| Edição?", isEdicao);
+
+  if (bloqueado && !isEdicao) {
     return (
       <div className="container py-4">
         <div className="bg-paintviz-accent p-4 rounded shadow text-center">

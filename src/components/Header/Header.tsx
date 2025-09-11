@@ -45,13 +45,13 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
 
   const adminLinks = (
     <>
-      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/atendentes">
+      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/gestao-atendentes">
         <i className="bi bi-person-circle"></i>
         Gestão de Atendentes
       </Link>
-      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/modelo">
+      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/gestao-modelos">
         <i className="bi bi-file-earmark-text"></i>
-        Cadastro de Modelo
+        Gestão de Modelos
       </Link>
     </>
   );

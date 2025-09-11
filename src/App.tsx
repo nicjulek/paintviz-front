@@ -9,7 +9,11 @@ import Footer from './components/Footer/Footer';
 import { UsuarioAutenticado } from "./types/types";
 import CadastroOrdem from './pages/CadastroOrdem';
 import ProtectedOrdemRoute from './components/ProtectedOrdemRoute/ProtectedOrdemRoute';
+import CadastroModelo from './pages/CadastroModelo';
+import GestaoModelos from './pages/GestaoModelos';
+import GestaoAtendentes from './pages/GestaoAtendentes';
 import ErroAcesso from './pages/ErroAcesso';
+import Ordem from './pages/Ordem';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UsuarioAutenticado | null>(null);
@@ -17,7 +21,6 @@ const App: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Sempre pede login ao iniciar
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -75,6 +78,9 @@ const App: React.FC = () => {
             <Route path="/login" element={<Navigate to="/galeria" replace />} />
             <Route path="/pintura" element={<Pintura />} />
             <Route path="/galeria" element={<Galeria />} />
+            <Route path="/cadastro-modelo" element={<CadastroModelo />} />
+            <Route path="/gestao-modelos" element={<GestaoModelos />} />
+            <Route path="/gestao-atendentes" element={<GestaoAtendentes />} />
             <Route path="/agenda" element={<Agenda />} />
             <Route
               path="/cadastro-ordem"
@@ -84,6 +90,7 @@ const App: React.FC = () => {
                 </ProtectedOrdemRoute>
               }
             />
+            <Route path="/ordem/:id" element={<Ordem />} />
             <Route path="*" element={<ErroAcesso mensagem="Página não encontrada ou acesso não autorizado." />} />
           </Routes>
         </main>

@@ -7,6 +7,7 @@ export interface Usuario {
   id_usuario?: number;
   nome: string;
   senha: string;
+  isAdmin?: boolean;
 }
 
 export interface Administrador {
@@ -170,6 +171,7 @@ export interface CadastroPecasProps {
     idSVG?: string;
     onChangeNome?: (novoNome: string) => void;
     onChangeIdSVG?: (novoIdSVG: string) => void;
+    onDescartar?: () => void;
 }
 
 // Props componente Button
@@ -210,6 +212,7 @@ export interface HeaderProps {
 export interface Item {
   label: string;
   desc: string;
+  highlight?: boolean;
 }
 
 export interface ColorPickerProps {
@@ -229,6 +232,10 @@ export interface PaletaModalProps {
     initialNome?: string;
     initialCores?: CorInput[];
     isEdit?: boolean;
+}
+
+export interface UploadSVGProps {
+  titulo: string;
 }
 
 export {};

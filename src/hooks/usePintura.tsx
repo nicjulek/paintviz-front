@@ -268,11 +268,17 @@ export function usePintura(navigate?: (path: string) => void) {
 
             validObjects.forEach((obj: FabricObject) => {
                 const objId = (obj as any).id;
-                if (objId && pecas.some(p => p.id_svg === objId)) {
-                    if (coresAplicadas[objId]) {
-                        obj.set('fill', coresAplicadas[objId]);
+                // Procura a peça cujo id_svg está contido no objId
+                const peca = objId
+                    ? pecas.find(p => p.id_svg && objId.toString().includes(p.id_svg.toString()))
+                    : undefined;
+
+                if (peca) {
+                    // Use o id_svg da peça para buscar a cor
+                    if (coresAplicadas[peca.id_svg]) {
+                        obj.set('fill', coresAplicadas[peca.id_svg]);
                     }
-                    (obj as any).data = { id: objId };
+                    (obj as any).data = { id: peca.id_svg };
                     obj.selectable = true;
                     obj.hoverCursor = 'pointer';
                     obj.lockMovementX = true;
@@ -324,7 +330,10 @@ export function usePintura(navigate?: (path: string) => void) {
         const group = canvas.getObjects().find(obj => obj.type === 'group') as Group;
         if (group) {
             const items = group.getObjects();
-            const targetObject = items.find((obj: any) => obj.data?.id === pecaSelecionada);
+            // Agora procura se o id_svg da peça está contido no id do objeto SVG
+            const targetObject = items.find((obj: any) =>
+                obj.data?.id && obj.data.id.toString().includes(pecaSelecionada)
+            );
             if (targetObject) {
                 targetObject.set('fill', cor);
                 canvas.renderAll();
@@ -357,21 +366,17 @@ export function usePintura(navigate?: (path: string) => void) {
             let pintura_svg_traseira = carroceriaSelecionada.traseira_svg;
             let pintura_svg_diagonal = carroceriaSelecionada.diagonal_svg;
 
-            if (fabricCanvasRef.current) {
-                switch (tipoVisualizacao) {
-                    case 'lateral':
-                        pintura_svg_lateral = fabricCanvasRef.current.toSVG();
-                        break;
-                    case 'traseira':
-                        pintura_svg_traseira = fabricCanvasRef.current.toSVG();
-                        break;
-                    case 'diagonal':
-                        pintura_svg_diagonal = fabricCanvasRef.current.toSVG();
-                        break;
-                }
-            }
+            // Função para renderizar e exportar SVG de cada visualização
+            const exportSVG = async (tipo: 'lateral' | 'traseira' | 'diagonal') => {
+                setTipoVisualizacao(tipo);
+                await new Promise(resolve => setTimeout(resolve, 100)); // Aguarda o canvas atualizar
+                return fabricCanvasRef.current ? fabricCanvasRef.current.toSVG() : '';
+            };
 
-            // ...dentro do handleSalvar...
+            pintura_svg_lateral = await exportSVG('lateral');
+            pintura_svg_traseira = await exportSVG('traseira');
+            pintura_svg_diagonal = await exportSVG('diagonal');
+
             const response = await axios.post(`${API_URL}/pinturas`, {
                 pintura_svg_lateral,
                 pintura_svg_traseira,
@@ -379,9 +384,6 @@ export function usePintura(navigate?: (path: string) => void) {
                 id_carroceria: carroceriaSelecionada.id_carroceria,
                 id_usuario: user.id
             }, getAuthHeaders());
-
-            // Adicione este log para verificação:
-            console.log("id_pintura retornado pelo backend:", response.data.id_pintura);
 
             localStorage.setItem('id_pintura', response.data.id_pintura);
 

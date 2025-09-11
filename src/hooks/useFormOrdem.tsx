@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
@@ -26,6 +26,12 @@ export function useFormOrdem() {
     const [error, setError] = useState<string>("");
     const [bloqueado, setBloqueado] = useState<boolean>(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Verifica se é edição
+    const params = new URLSearchParams(location.search);
+    const idOrdem = params.get("id_ordem");
+    const isEdicao = !!idOrdem;
 
     const isPreOrdem = String(form.status) === "1";
 
@@ -44,26 +50,53 @@ export function useFormOrdem() {
         }
     };
 
+    // Busca dados da ordem se for edição
     useEffect(() => {
         fetchData();
-        const idPintura = localStorage.getItem("id_pintura");
-        setBloqueado(!idPintura);
-    }, []);
+        if (isEdicao) {
+            setBloqueado(false); // Libera acesso para edição
+            axios.get(`${API_URL}/ordem-servico/${idOrdem}`)
+                .then(res => {
+                    const ordem = res.data;
+                    setForm({
+                        id_cliente: ordem.id_cliente ? String(ordem.id_cliente) : "",
+                        id_usuario_responsavel: ordem.id_usuario_responsavel ? String(ordem.id_usuario_responsavel) : "",
+                        modelo_veiculo: ordem.modelo_veiculo || "",
+                        placa_veiculo: ordem.placa_veiculo || "",
+                        identificacao_veiculo: ordem.identificacao_veiculo || "",
+                        data_emissao: ordem.data_emissao ? ordem.data_emissao.slice(0, 10) : "",
+                        data_entrega: ordem.data_entrega ? ordem.data_entrega.slice(0, 10) : "",
+                        data_programada: ordem.data_programada ? ordem.data_programada.slice(0, 10) : "",
+                        status: ordem.id_status ? String(ordem.id_status) : "",
+                        id_pintura: ordem.id_pintura ? String(ordem.id_pintura) : "",
+                        numero_box: ordem.numero_box || ""
+                    });
+                })
+                .catch(() => setError("Erro ao carregar ordem para edição."));
+        } else {
+            // Cadastro: bloqueia se não tem pintura
+            const idPintura = localStorage.getItem("id_pintura");
+            setBloqueado(!idPintura);
+        }
+    }, [isEdicao, idOrdem]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
     const handleVoltar = () => {
-        const idPintura = localStorage.getItem("id_pintura");
-        if (idPintura && idPintura !== "undefined" && idPintura !== "") {
-            navigate(`/pintura?id_pintura=${idPintura}`);
+        if (isEdicao) {
+            navigate(-1);
         } else {
-            navigate("/pintura");
+            const idPintura = localStorage.getItem("id_pintura");
+            if (idPintura && idPintura !== "undefined" && idPintura !== "") {
+                navigate(`/pintura?id_pintura=${idPintura}`);
+            } else {
+                navigate("/pintura");
+            }
         }
     };
 
-    // ...existing code...
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -93,7 +126,6 @@ export function useFormOrdem() {
             data_ultima_modificacao: new Date().toISOString().slice(0, 19).replace('T', ' ')
         };
 
-        // Sempre envia os campos preenchidos ou data do dia
         payload.identificacao_veiculo = form.identificacao_veiculo;
         payload.data_emissao = form.data_emissao && form.data_emissao.trim() !== "" ? form.data_emissao : dataHoje;
         payload.data_entrega = form.data_entrega && form.data_entrega.trim() !== "" ? form.data_entrega : dataHoje;
@@ -101,15 +133,19 @@ export function useFormOrdem() {
         payload.placa_veiculo = form.placa_veiculo;
         payload.numero_box = form.numero_box && form.numero_box.trim() !== "" ? form.numero_box : null;
 
-        console.log("Payload enviado para o backend:", payload);
-
         try {
-            await axios.post(`${API_URL}/ordem-servico`, payload);
-            alert("Ordem de serviço cadastrada com sucesso!");
-            localStorage.removeItem("id_pintura");
-            navigate("/galeria");
+            if (isEdicao && idOrdem) {
+                await axios.put(`${API_URL}/ordem-servico/${idOrdem}`, payload);
+                alert("Ordem de serviço atualizada com sucesso!");
+                navigate(-1);
+            } else {
+                await axios.post(`${API_URL}/ordem-servico`, payload);
+                alert("Ordem de serviço cadastrada com sucesso!");
+                localStorage.removeItem("id_pintura");
+                navigate("/galeria");
+            }
         } catch (err: any) {
-            setError(err.response?.data?.error || "Erro ao cadastrar ordem de serviço.");
+            setError(err.response?.data?.error || "Erro ao salvar ordem de serviço.");
         } finally {
             setLoading(false);
         }
@@ -130,6 +166,7 @@ export function useFormOrdem() {
         handleVoltar,
         handleSubmit,
         fetchData,
-        isPreOrdem
+        isPreOrdem,
+        isEdicao // exporta para uso no formulário
     };
 }

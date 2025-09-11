@@ -92,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                       height="50"
                     />
                   </div>
-                  <h2 className="fw-bold text-dark mb-2">Bem-vindo(a) de volta!</h2>
+                  <h2 className="fw-bold text-dark mb-2">Bem-vindo(a)!</h2>
                   <p className="text-dark mb-0" style={{ fontSize: '0.9rem' }}>
                     Dando vida às suas ideias com cores e formas.
                   </p>

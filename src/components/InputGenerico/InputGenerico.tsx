@@ -11,7 +11,7 @@ const InputGenerico: React.FC<InputGenericoProps> = ({
 }) => {
     return(
         <div className = "input-generico">
-            <label className="input-label">{titulo}:</label>
+            <label className="input-label">{titulo}</label>
             <input
                 type={type}
                 className="input-campo"

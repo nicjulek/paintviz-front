@@ -11,6 +11,12 @@ export const statusList = [
   { id: 5, nome: "Cancelada" }
 ];
 
+// Função utilitária para exibir o nome do status
+export function getStatusNome(id_status: number) {
+  const status = statusList.find(s => s.id === Number(id_status));
+  return status ? status.nome : String(id_status);
+}
+
 export function useGaleria() {
   const [ordens, setOrdens] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -135,6 +141,7 @@ export function useGaleria() {
     alterando,
     setAlterando,
     alterarStatus,
-    alterarPrioridade
+    alterarPrioridade,
+    getStatusNome 
   };
 }
