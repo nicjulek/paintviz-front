@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CadastroPecas from '../components/CadastroPecas/CadastroPecas';
 import Button from '../components/Button/Button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Peca, Carroceria } from '../types/types';
 
@@ -47,11 +47,21 @@ const CadastroModelos = () => {
   const [lateralSVG, setLateralSVG] = useState<File | null>(null);
   const [traseiraSVG, setTraseiraSVG] = useState<File | null>(null);
   const [diagonalSVG, setDiagonalSVG] = useState<File | null>(null);
+  const { id } = useParams();
+  const [modelo, setModelo] = useState<Carroceria | null>(null);
   const [pecas, setPecas] = useState<Peca[]>([
     { nome_peca: '', id_svg: '', id_pintura: 1, id_carroceria: 0, cor_atual: '', cor_inicial: '' }
   ]);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) {
+      // Se tem id, está editando: carregue os dados
+      axios.get(`/carrocerias/${id}`).then(res => setModelo(res.data));
+    }
+  }, [id]);
+
 
   const handleAddPeca = () => {
     setPecas(prev => [

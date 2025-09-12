@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Button from '../components/Button/Button';
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGenerico from '../components/InputGenerico/InputGenerico';
 import { Usuario } from '../types/types';

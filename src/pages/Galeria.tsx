@@ -246,7 +246,7 @@ const Galeria: React.FC = () => {
             >
               <CardOrdem
                 id_ordem_servico={ordem.id_ordem_servico}
-                identificacao_veiculo={ordem.identificacao_veiculo}
+                placa_veiculo={ordem.placa_veiculo}
                 status={getStatusNome(ordem.id_status)}
                 nome_cliente={
                   ordem.cliente?.pessoa_fisica?.nome ||

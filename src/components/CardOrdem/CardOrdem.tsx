@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 interface CardOrdemProps {
   id_ordem_servico: number;
-  identificacao_veiculo: string;
+  placa_veiculo: string;
   status: number | string;
   nome_cliente: string;
   data_entrega: string;
@@ -36,7 +36,7 @@ function formatarData(dataIso: string) {
 
 const CardOrdem: React.FC<CardOrdemProps> = ({
   id_ordem_servico,
-  identificacao_veiculo,
+  placa_veiculo,
   status,
   nome_cliente,
   data_entrega,
@@ -146,7 +146,7 @@ const CardOrdem: React.FC<CardOrdemProps> = ({
                 </span>
               )}
               <span className="text-secondary" style={{ fontSize: '1rem' }}>
-                <strong>Veículo:</strong> {identificacao_veiculo}
+                <strong>Placa:</strong> {placa_veiculo}
               </span>
             </div>
           </div>

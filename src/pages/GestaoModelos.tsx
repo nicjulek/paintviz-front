@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Button from '../components/Button/Button';
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGenerico from '../components/InputGenerico/InputGenerico';
 import { Carroceria } from '../types/types';
@@ -12,6 +11,7 @@ const GestaoModelos: React.FC = () => {
   const [erro, setErro] = useState<string | null>(null);
   const [termoPesquisa, setTermoPesquisa] = useState('');
   const navigate = useNavigate();
+  const isAdmin = JSON.parse(localStorage.getItem('user') || '{}')?.isAdmin;
 
   const buscarModelos = async () => {
     try {
@@ -50,7 +50,10 @@ const GestaoModelos: React.FC = () => {
   };
 
   const handleEditar = (modelo: Carroceria) => {
-    navigate(`/editar-modelo/${modelo.id_carroceria}`);
+    if (isAdmin) {
+      navigate(`/editar-modelo/${modelo.id_carroceria}`);
+      return;
+    }
   };
 
   const handleExcluir = async (id?: number) => {

@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
 import FormularioOrdem from "../components/FormularioOrdem/FormularioOrdem";
 
-
 const CadastroOrdem: React.FC = () => {
   
   return (
