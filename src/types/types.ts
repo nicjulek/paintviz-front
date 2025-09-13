@@ -10,18 +10,10 @@ export interface Usuario {
   isAdmin?: boolean;
 }
 
-export interface Administrador {
-  id_usuario: number;
-}
-
 export interface UsuarioAutenticado {
   id: number;
   nome: string;
   isAdmin: boolean;
-}
-
-export interface AuthRequest extends Request {
-  user?: UsuarioAutenticado;
 }
 
 // ========= PALETA =========
@@ -35,11 +27,6 @@ export interface Cor {
   nome_cor: string;
   cod_cor: string;
   id_paleta: number;
-}
-
-export interface PaletaCor {
-  id_paleta: number;
-  id_cor: number;
 }
 
 // ========= CLIENTE =========
@@ -97,12 +84,6 @@ export interface Peca {
 }
 
 // ========= ORDEM DE SERVICO =========
-export interface Status {
-  id_status?: number;
-  descricao: string;
-  data_definicao_status: Date;
-}
-
 export interface OrdemDeServico {
   id_ordem_servico?: number;
   identificacao_veiculo: string;
@@ -130,23 +111,7 @@ export interface CardOrdemProps {
   onAlterarStatus?: (id: number) => void;
 }
 
-// Interface peças coloridas
-export interface PecaColorida {
-  id: string;
-  nomePeca: string;
-  corQuadrado: string;
-  corSelecionada: string;
-}
-
-// Props componente PecaColorida
-export interface PecaColoridaProps {
-  nomePeca: string;
-  corQuadrado: string;
-  corSelecionada: string;
-  onCorChange: (novaCor: string) => void;
-  id?: string;
-}
-
+// ========= COMPONENT PROPS =========
 export interface InputGenericoProps {
   titulo: string;
   placeholder?: string;
@@ -155,26 +120,14 @@ export interface InputGenericoProps {
   type?: string;
 }
 
-export interface AddCorProps {
-  nomeCor?: string;
-  corQuadrado?: string;
-  onChangeNome?: (novoNome: string) => void;
-  onDelete?: () => void;
-}
-
-export interface CorPaletaProps {
-  corQuadrado: string;
-}
-
 export interface CadastroPecasProps {
-    nomeModelo?: string;
-    idSVG?: string;
-    onChangeNome?: (novoNome: string) => void;
-    onChangeIdSVG?: (novoIdSVG: string) => void;
-    onDescartar?: () => void;
+  nomeModelo?: string;
+  idSVG?: string;
+  onChangeNome?: (novoNome: string) => void;
+  onChangeIdSVG?: (novoIdSVG: string) => void;
+  onDescartar?: () => void;
 }
 
-// Props componente Button
 export interface ButtonProps {
   texto: string;
   onClick?: () => void;
@@ -198,8 +151,6 @@ export interface ButtonProps {
   className?: string;
 }
 
-
-// Props para o componente Header
 export interface HeaderProps {
   user?: {
     name: string;
@@ -208,7 +159,6 @@ export interface HeaderProps {
   onLogout?: () => void;
 }
 
-//interface para o Item do componente CardItem
 export interface Item {
   label: string;
   desc: string;
@@ -221,21 +171,82 @@ export interface ColorPickerProps {
 }
 
 export interface CorInput {
-    nome_cor: string;
-    cod_cor: string;
+  nome_cor: string;
+  cod_cor: string;
+}
+
+export interface CorPaletaProps {
+  corQuadrado: string;
 }
 
 export interface PaletaModalProps {
-    show: boolean;
-    onClose: () => void;
-    onSave: (nomePaleta: string, cores: CorInput[]) => void;
-    initialNome?: string;
-    initialCores?: CorInput[];
-    isEdit?: boolean;
+  show: boolean;
+  onClose: () => void;
+  onSave: (nomePaleta: string, cores: CorInput[]) => void;
+  initialNome?: string;
+  initialCores?: CorInput[];
+  isEdit?: boolean;
 }
 
-export interface UploadSVGProps {
+export interface SvgUploadProps {
+  id: string;
+  label: string;
+  file: File | null;
+  onFileChange: (file: File | null) => void;
+  disabled: boolean;
+}
+
+export interface SidebarMenuProps {
+  menuAberto: boolean;
+  setMenuAberto: (open: boolean) => void;
+  renderCarroceriaSelector: () => React.ReactNode;
+  renderTipoVisualizacao: () => React.ReactNode;
+  renderPaletaCores: () => React.ReactNode;
+  renderListaPecas: () => React.ReactNode;
+  pecaSelecionada: string | null;
+  pecas: Peca[];
+  handleSalvar: () => void;
+  loading: boolean;
+  handleDescartar: () => void;
+  coresAplicadas: { [key: string]: string };
+  cores: Cor[];
+  setCores: (cores: Cor[]) => void;
+  corSelecionada: string;
+  handleColorChange: (cor: string) => void;
+}
+
+export interface CardInfoProps {
   titulo: string;
+  icon?: React.ReactNode;
+  informacoes: Item[];
+}
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
+
+export interface CardsGridProps {
+  ordens: any[];
+  openStatusModal: (ordem: any) => void;
+  openPrioriModal: (ordem: any) => void;
+}
+
+// Props para FormularioCliente component
+export interface FormularioClienteProps {
+  show: boolean;
+  onClose: () => void;
+  onClienteCadastrado: () => void;
+  cliente?: Cliente | null;
+  isEditing?: boolean;
+}
+
+// Props para useFormCliente hook
+export interface UseFormClienteProps {
+  cliente?: Cliente | null;
+  isEditing?: boolean;
+  show: boolean;
 }
 
 export {};

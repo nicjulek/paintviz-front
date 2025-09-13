@@ -4,25 +4,8 @@ import ColorPicker from "../ColorPicker/ColorPicker";
 import PaletaModal from "../../modals/PaletaModal";
 import { usePaleta } from "../../hooks/usePaleta";
 import CorPaleta from "../CorPaleta/CorPaleta";
+import { SidebarMenuProps } from "../../types/types";
 
-interface SidebarMenuProps {
-    menuAberto: boolean;
-    setMenuAberto: (open: boolean) => void;
-    renderCarroceriaSelector: () => React.ReactNode;
-    renderTipoVisualizacao: () => React.ReactNode;
-    renderPaletaCores: () => React.ReactNode;
-    renderListaPecas: () => React.ReactNode;
-    pecaSelecionada: string | null;
-    pecas: Peca[];
-    handleSalvar: () => void;
-    loading: boolean;
-    handleDescartar: () => void;
-    coresAplicadas: { [key: string]: string };
-    cores: Cor[];
-    setCores: (cores: Cor[]) => void;
-    corSelecionada: string;
-    handleColorChange: (cor: string) => void;
-}
 const SidebarMenu: React.FC<SidebarMenuProps> = ({
     menuAberto,
     setMenuAberto,
@@ -135,9 +118,11 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                         <div className="mb-3">
                                             <div className="d-flex gap-2 mb-2">
                                                 <button
-                                                    className="btn btn-info btn-sm d-flex align-items-center px-3 py-2 shadow-sm w-100"
+                                                    className="btn btn-sm d-flex align-items-center px-3 py-2 shadow-sm w-100"
                                                     onClick={handleNovaPaleta}
                                                     style={{
+                                                        backgroundColor: '#393125ec',
+                                                        color: '#fff',
                                                         fontWeight: 'bold',
                                                         borderRadius: '0.5rem',
                                                         boxShadow: '0 2px 8px #c4ae7844',
@@ -154,6 +139,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                     onClick={handleEditarPaleta}
                                                     disabled={!paletaSelecionada}
                                                     style={{
+                                                        backgroundColor: '#393125ec',
+                                                        color: '#fff',
                                                         fontWeight: 'bold',
                                                         borderRadius: '0.5rem',
                                                         boxShadow: '0 2px 8px #c4ae7844',

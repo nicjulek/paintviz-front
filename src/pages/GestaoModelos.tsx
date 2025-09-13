@@ -11,7 +11,6 @@ const GestaoModelos: React.FC = () => {
   const [erro, setErro] = useState<string | null>(null);
   const [termoPesquisa, setTermoPesquisa] = useState('');
   const navigate = useNavigate();
-  const isAdmin = JSON.parse(localStorage.getItem('user') || '{}')?.isAdmin;
 
   const buscarModelos = async () => {
     try {
@@ -50,28 +49,11 @@ const GestaoModelos: React.FC = () => {
   };
 
   const handleEditar = (modelo: Carroceria) => {
-    if (isAdmin) {
-      navigate(`/editar-modelo/${modelo.id_carroceria}`);
-      return;
-    }
+    navigate(`/editar-modelo/${modelo.id_carroceria}`);
   };
 
-  const handleExcluir = async (id?: number) => {
-    if (!id) return;
-    if (!window.confirm('Tem certeza que deseja excluir este modelo?')) return;
-
-    try {
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
-      const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/carrocerias/${id}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {}
-      });
-      buscarModelos();
-    } catch (error) {
-      console.error('Erro ao excluir modelo:', error);
-      alert('Não foi possível excluir o modelo.');
-    }
-  };
+  if (carregando) return <div className="text-center p-5">Carregando modelos...</div>;
+  if (erro) return <div className="text-center p-5 text-danger">Erro: {erro}</div>;
 
   return (
     <div className="container-fluid p-4">
@@ -155,16 +137,6 @@ const GestaoModelos: React.FC = () => {
                         >
                           <i className="bi bi-pencil-fill"></i>
                           Editar
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm shadow-sm d-flex align-items-center gap-2"
-                          onClick={() => handleExcluir(modelo.id_carroceria)}
-                          style={{ transition: 'box-shadow 0.2s' }}
-                          onMouseEnter={e => e.currentTarget.classList.add('shadow')}
-                          onMouseLeave={e => e.currentTarget.classList.remove('shadow')}
-                        >
-                          <i className="bi bi-trash-fill"></i>
-                          Excluir
                         </button>
                       </div>
                     </td>

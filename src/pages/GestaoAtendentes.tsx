@@ -1,65 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import InputGenerico from '../components/InputGenerico/InputGenerico';
-import { Usuario } from '../types/types';
 import CadastroAtendenteModal from '../modals/CadastroAtendenteModal';
+import { useAtendentes } from '../hooks/useAtendentes';
 
 const GestaoAtendentes: React.FC = () => {
-    const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-    const [carregando, setCarregando] = useState<boolean>(true);
-    const [erro, setErro] = useState<string | null>(null);
-    const [termoPesquisa, setTermoPesquisa] = useState('');
-    const [modalOpen, setModalOpen] = useState(false);
-    const [modalId, setModalId] = useState<number | undefined>(undefined);
-
-    const buscarUsuarios = async () => {
-        try {
-            setCarregando(true);
-            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
-            const response = await axios.get(API_URL + '/usuarios');
-            setUsuarios(response.data);
-        } catch (error) {
-            setErro("Não foi possível carregar a lista de usuários.");
-        } finally {
-            setCarregando(false);
-        }
-    };
-
-    useEffect(() => {
-        buscarUsuarios();
-    }, []);
-
-    const handlePesquisaChange = (novoValor: string) => {
-        setTermoPesquisa(novoValor);
-    };
-
-    const atendentesFiltrados = usuarios
-        .filter(user => !user.isAdmin)
-        .filter(atendente => atendente.nome.toLowerCase().includes(termoPesquisa.toLowerCase()));
-
-    const handleCadastrarAtendente = () => {
-        setModalId(undefined);
-        setModalOpen(true);
-    };
-
-    const handleEditar = (atendente: Usuario) => {
-        setModalId(atendente.id_usuario);
-        setModalOpen(true);
-    };
-
-    const handleExcluir = async (id?: number) => {
-        if (!id) return;
-        if (!window.confirm('Tem certeza que deseja excluir este atendente?')) return;
-
-        try {
-            const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3333";
-            await axios.delete(`${API_URL}/usuarios/${id}`);
-            buscarUsuarios();
-        } catch (error) {
-            alert('Não foi possível excluir o atendente.');
-        }
-    };
+    const {
+        carregando,
+        erro,
+        termoPesquisa,
+        modalOpen,
+        modalId,
+        atendentesFiltrados,
+        buscarUsuarios,
+        handlePesquisaChange,
+        handleCadastrarAtendente,
+        handleEditar,
+        handleExcluir,
+        handleCloseModal
+    } = useAtendentes();
 
     return (
         <div className="container-fluid p-4">
@@ -74,10 +33,10 @@ const GestaoAtendentes: React.FC = () => {
                 margin: '0 auto'
             }}>
                 <div className="d-flex justify-content-between align-items-center mb-4">
-                    <h2 className="mb-0 fs-5 fw-bold" style={{ color: '#6d4c1c' }}>
+                    <h3 className="mb-0 fs-5 fw-bold" style={{ color: '#6d4c1c' }}>
                         <i className="bi bi-person-lines-fill me-2"></i>
                         Atendentes
-                    </h2>
+                    </h3>
                     <div className="d-flex align-items-end gap-2">
                         <div style={{ minWidth: 0 }}>
                             <InputGenerico
@@ -93,7 +52,7 @@ const GestaoAtendentes: React.FC = () => {
                             onClick={handleCadastrarAtendente}
                             style={{
                                 transition: 'box-shadow 0.2s',
-                                minWidth: 180,
+                                minWidth: '180px',
                                 height: '40px'
                             }}
                             onMouseEnter={e => e.currentTarget.classList.add('shadow')}
@@ -172,13 +131,12 @@ const GestaoAtendentes: React.FC = () => {
             </div>
             <CadastroAtendenteModal
                 show={modalOpen}
-                onClose={() => setModalOpen(false)}
+                onClose={handleCloseModal}
                 onSuccess={buscarUsuarios}
                 id={modalId}
             />
         </div>
     );
 };
-
 
 export default GestaoAtendentes;

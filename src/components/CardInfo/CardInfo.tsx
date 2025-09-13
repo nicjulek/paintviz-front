@@ -1,35 +1,77 @@
 import React from 'react';
-import { Item } from '../../types/types';
+import { CardInfoProps } from '../../types/types';
 
-interface CardInfoProps {
-  titulo: string;
-  icon?: React.ReactNode;
-  informacoes: Item[];
-}
+// Funções de formatação
+const formatarCPF = (cpf: string): string => {
+  if (!cpf) return cpf;
+  const cpfLimpo = cpf.replace(/\D/g, "");
+  if (cpfLimpo.length === 11) {
+    return cpfLimpo.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  }
+  return cpf;
+};
+
+const formatarCNPJ = (cnpj: string): string => {
+  if (!cnpj) return cnpj;
+  const cnpjLimpo = cnpj.replace(/\D/g, "");
+  if (cnpjLimpo.length === 14) {
+    return cnpjLimpo.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  }
+  return cnpj;
+};
+
+const formatarTelefone = (telefone: string): string => {
+  if (!telefone) return telefone;
+  const telefoneLimpo = telefone.replace(/\D/g, "");
+  if (telefoneLimpo.length === 11) {
+    return telefoneLimpo.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else if (telefoneLimpo.length === 10) {
+    return telefoneLimpo.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  }
+  return telefone;
+};
+
+// Função para aplicar formatação baseada no label
+const formatarValor = (label: string, valor: string): string => {
+  if (!valor || valor === "-") return valor;
+  
+  const labelLower = label.toLowerCase();
+  
+  if (labelLower.includes("cpf")) {
+    return formatarCPF(valor);
+  } else if (labelLower.includes("cnpj")) {
+    return formatarCNPJ(valor);
+  } else if (labelLower.includes("telefone") || labelLower.includes("celular")) {
+    return formatarTelefone(valor);
+  }
+  
+  return valor;
+};
 
 const CardInfo: React.FC<CardInfoProps> = ({ titulo, icon, informacoes }) => {
   return (
     <div
-      className="card p-3 mb-3"
+      className="card p-4 mb-4"
       style={{
         background: "linear-gradient(135deg, #f7f3e9 0%, #e9e1d0 100%)",
         border: "none",
         borderRadius: "14px",
         boxShadow: "0 4px 16px 0 rgba(90,64,42,0.10)",
-        minHeight: 80,
-        maxWidth: 480, // menor largura máxima
-        margin: "0 auto"
+        minHeight: 120,
+        maxWidth: 600,
+        margin: "0 auto",
+        width: "100%"
       }}
     >
       <div className="d-flex align-items-center mb-2" style={{ gap: 10 }}>
         {icon && (
-          <span style={{ fontSize: "1.2rem" }}>{icon}</span>
+          <span style={{ fontSize: "1.4rem" }}>{icon}</span>
         )}
         <h5
           className="mb-0 fw-bold"
           style={{
             color: "#5A402A",
-            fontSize: "1.02rem",
+            fontSize: "1.32rem",
             letterSpacing: "0.5px"
           }}
         >
@@ -59,7 +101,7 @@ const CardInfo: React.FC<CardInfoProps> = ({ titulo, icon, informacoes }) => {
                   paddingLeft: info.highlight ? "2px" : "0"
                 }}
               >
-                {info.desc}
+                {formatarValor(info.label, info.desc)}
               </div>
             </div>
           </div>

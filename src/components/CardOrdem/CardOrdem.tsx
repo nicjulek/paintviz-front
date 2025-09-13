@@ -184,7 +184,22 @@ const CardOrdem: React.FC<CardOrdemProps> = ({
         </div>
         <div className="d-flex gap-2 justify-content-center mt-3">
           <button
-            className="btn btn-primary btn-sm d-flex align-items-center"
+            className="btn btn-sm d-flex align-items-center"
+            style={{
+              background: "linear-gradient(135deg, #5A402A 0%, #3D2B1C 100%)",
+              color: "#fff",
+              border: "none",
+              boxShadow: "0 4px 15px rgba(90,64,42,0.3)",
+              transition: "all 0.3s ease"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-3px)";
+              e.currentTarget.style.boxShadow = "0 8px 25px rgba(90,64,42,0.4)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 15px rgba(90,64,42,0.3)";
+            }}
             onClick={e => { e.stopPropagation(); if (onAlterarStatus) onAlterarStatus(); }}
             disabled={alterando}
           >
@@ -192,7 +207,20 @@ const CardOrdem: React.FC<CardOrdemProps> = ({
             Alterar Status
           </button>
           <button
-            className="btn btn-primary btn-sm d-flex align-items-center"
+            className="btn btn-sm d-flex align-items-center" style={{ background: "linear-gradient(135deg, #5A402A 0%, #3D2B1C 100%)",
+              color: "#fff",
+              border: "none",
+              boxShadow: "0 4px 15px rgba(90,64,42,0.3)",
+              transition: "all 0.3s ease"
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = "translateY(-3px)";
+              e.currentTarget.style.boxShadow = "0 8px 25px rgba(90,64,42,0.4)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 4px 15px rgba(90,64,42,0.3)";
+            }}
             onClick={e => { e.stopPropagation(); if (onAlterarPrioridade) onAlterarPrioridade(); }}
             disabled={alterando}
           >

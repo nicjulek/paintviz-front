@@ -98,58 +98,78 @@ export function useFormOrdem() {
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        const dataHoje = new Date().toISOString().slice(0, 10);
+    const dataHoje = new Date().toISOString().slice(0, 10);
 
-        if (!isPreOrdem) {
-            if (
-                !form.identificacao_veiculo.trim() ||
-                !form.data_entrega.trim() ||
-                !form.data_programada.trim() ||
-                !form.placa_veiculo.trim()
-            ) {
-                setError("Preencha todos os campos obrigatórios.");
-                setLoading(false);
-                return;
-            }
-        }
-
-        const payload: any = {
-            modelo_veiculo: form.modelo_veiculo,
-            id_cliente: Number(form.id_cliente),
-            id_usuario_responsavel: Number(form.id_usuario_responsavel),
-            id_status: Number(form.status),
-            id_pintura: Number(form.id_pintura),
-            data_ultima_modificacao: new Date().toISOString().slice(0, 19).replace('T', ' ')
-        };
-
-        payload.identificacao_veiculo = form.identificacao_veiculo;
-        payload.data_emissao = form.data_emissao && form.data_emissao.trim() !== "" ? form.data_emissao : dataHoje;
-        payload.data_entrega = form.data_entrega && form.data_entrega.trim() !== "" ? form.data_entrega : dataHoje;
-        payload.data_programada = form.data_programada && form.data_programada.trim() !== "" ? form.data_programada : dataHoje;
-        payload.placa_veiculo = form.placa_veiculo;
-        payload.numero_box = form.numero_box && form.numero_box.trim() !== "" ? form.numero_box : null;
-
-        try {
-            if (isEdicao && idOrdem) {
-                await axios.put(`${API_URL}/ordem-servico/${idOrdem}`, payload);
-                alert("Ordem de serviço atualizada com sucesso!");
-                navigate(-1);
-            } else {
-                await axios.post(`${API_URL}/ordem-servico`, payload);
-                alert("Ordem de serviço cadastrada com sucesso!");
-                localStorage.removeItem("id_pintura");
-                navigate("/galeria");
-            }
-        } catch (err: any) {
-            setError(err.response?.data?.error || "Erro ao salvar ordem de serviço.");
-        } finally {
+    if (!isPreOrdem) {
+        if (
+            !form.identificacao_veiculo.trim() ||
+            !form.data_entrega.trim() ||
+            !form.data_programada.trim() ||
+            !form.placa_veiculo.trim()
+        ) {
+            setError("Preencha todos os campos obrigatórios.");
             setLoading(false);
+            return;
         }
+    }
+
+    const payload: any = {
+        modelo_veiculo: form.modelo_veiculo,
+        id_cliente: Number(form.id_cliente),
+        id_usuario_responsavel: Number(form.id_usuario_responsavel),
+        id_status: Number(form.status),
+        id_pintura: Number(form.id_pintura),
+        data_ultima_modificacao: new Date().toISOString().slice(0, 19).replace('T', ' ')
     };
+
+    payload.identificacao_veiculo = form.identificacao_veiculo;
+    payload.data_emissao = form.data_emissao && form.data_emissao.trim() !== "" ? form.data_emissao : dataHoje;
+    payload.data_entrega = form.data_entrega && form.data_entrega.trim() !== "" ? form.data_entrega : dataHoje;
+    payload.data_programada = form.data_programada && form.data_programada.trim() !== "" ? form.data_programada : dataHoje;
+    payload.placa_veiculo = form.placa_veiculo;
+
+    // Só envia numero_box se status for 3 (Em Produção) e valor não vazio
+    if (String(form.status) === "3") {
+        const numeroBoxLimpo = form.numero_box.trim();
+        if (numeroBoxLimpo !== "") {
+            payload.numero_box = numeroBoxLimpo;
+        } else {
+            setError("Número do box é obrigatório para ordem em produção.");
+            setLoading(false);
+            return;
+        }
+    }
+
+    // Nunca envia numero_box se status não for 3
+    if (String(form.status) !== "3" && "numero_box" in payload) {
+        delete payload.numero_box;
+    }
+
+    // Log para depuração
+    console.log("Status selecionado:", form.status);
+    console.log("Payload enviado:", payload);
+
+    try {
+        if (isEdicao && idOrdem) {
+            await axios.put(`${API_URL}/ordem-servico/${idOrdem}`, payload);
+            alert("Ordem de serviço atualizada com sucesso!");
+            navigate(-1);
+        } else {
+            await axios.post(`${API_URL}/ordem-servico`, payload);
+            alert("Ordem de serviço cadastrada com sucesso!");
+            localStorage.removeItem("id_pintura");
+            navigate("/galeria");
+        }
+    } catch (err: any) {
+        setError(err.response?.data?.error || "Erro ao salvar ordem de serviço.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     return {
         clientes,

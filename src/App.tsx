@@ -14,6 +14,8 @@ import GestaoModelos from './pages/GestaoModelos';
 import GestaoAtendentes from './pages/GestaoAtendentes';
 import ErroAcesso from './pages/ErroAcesso';
 import Ordem from './pages/Ordem';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute/ProtectedAdminRoute';
+import CadastroModelos from './pages/CadastroModelo';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UsuarioAutenticado | null>(null);
@@ -78,9 +80,37 @@ const App: React.FC = () => {
             <Route path="/login" element={<Navigate to="/galeria" replace />} />
             <Route path="/pintura" element={<Pintura />} />
             <Route path="/galeria" element={<Galeria />} />
-            <Route path="/cadastro-modelo" element={<CadastroModelo />} />
-            <Route path="/gestao-modelos" element={<GestaoModelos />} />
-            <Route path="/gestao-atendentes" element={<GestaoAtendentes />} />
+            <Route
+              path="/cadastro-modelo"
+              element={
+                <ProtectedAdminRoute>
+                  <CadastroModelo />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/gestao-modelos"
+              element={
+                <ProtectedAdminRoute>
+                  <GestaoModelos />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route
+              path="/gestao-atendentes"
+              element={
+                <ProtectedAdminRoute>
+                  <GestaoAtendentes />
+                </ProtectedAdminRoute>
+              }
+            />
+            <Route 
+              path="/editar-modelo/:id" 
+              element={
+                <ProtectedAdminRoute>
+                  <CadastroModelos />
+                </ProtectedAdminRoute>
+            } />
             <Route path="/agenda" element={<Agenda />} />
             <Route
               path="/cadastro-ordem"

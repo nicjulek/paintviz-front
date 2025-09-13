@@ -72,7 +72,15 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
     return (
         <div className="modal show d-block" tabIndex={-1} style={{ background: "rgba(0,0,0,0.5)" }}>
             <div className="modal-dialog modal-lg">
-                <div className="modal-content" style={{ background: "#F5E3C6" }}>
+                <div
+                    className="modal-content"
+                    style={{
+                        background: "#F5E3C6",
+                        border: "2px solid #D2B896",
+                        borderRadius: "16px",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.2)"
+                    }}
+                >
                     <div className="modal-header">
                         <h5 className="modal-title">{isEdit ? "Editar Paleta" : "Criar Nova Paleta"}</h5>
                         <button type="button" className="btn-close" onClick={onClose} />
@@ -180,7 +188,7 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar mais cores
                                 </button>
-                                
+
                             </div>
                             <div className="d-flex justify-content-center mb-3 paleta-modal-colorpicker" style={{ marginLeft: 0, flex: "0 0 300px" }}>
                                 <div style={{

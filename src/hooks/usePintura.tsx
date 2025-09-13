@@ -457,7 +457,8 @@ export function usePintura(navigate?: (path: string) => void) {
                         style={{
                             borderColor: '#6b4226',
                             borderRadius: '8px',
-                            marginRight: '8px'
+                            marginRight: '8px',
+                            background: tipoVisualizacao === tipo ? undefined : '#fff'
                         }}
                         onClick={() => setTipoVisualizacao(tipo)}
                         disabled={

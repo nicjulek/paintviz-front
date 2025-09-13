@@ -34,6 +34,7 @@ const CadastroAtendenteModal: React.FC<ModalCadastroAtendenteProps> = ({
         .then((response) => setNome(response.data.nome))
         .catch(() => setErro("Não foi possível carregar os dados para edição."))
         .finally(() => setLoading(false));
+      setSuccess("");
     } else if (show) {
       setNome("");
       setSenha("");
@@ -43,15 +44,20 @@ const CadastroAtendenteModal: React.FC<ModalCadastroAtendenteProps> = ({
     }
   }, [id, show]);
 
+  // Adicione esta função de validação:
+function senhaValida(senha: string) {
+  return senha.length >= 6 && /[a-zA-Z]/.test(senha);
+}
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErro("");
     setSuccess("");
     setLoading(true);
 
-    if (!id) {
-      if (!senha) {
-        setErro("A senha é obrigatória para novos usuários.");
+    if (senha) {
+      if (!senhaValida(senha)) {
+        setErro("A senha deve ter pelo menos 6 caracteres e conter letras.");
         setLoading(false);
         return;
       }
@@ -63,14 +69,14 @@ const CadastroAtendenteModal: React.FC<ModalCadastroAtendenteProps> = ({
     }
 
     const payload: any = { nome };
-    if (!id || senha) {
+    if (senha) {
       payload.senha = senha;
     }
 
     try {
       if (id) {
         await axios.put(`${API_URL}/usuarios/${id}`, payload);
-        setSuccess("Atendente atualizado com sucesso!");
+        setSuccess(""); // Não mostra mensagem de cadastro ao atualizar
       } else {
         await axios.post(`${API_URL}/usuarios`, payload);
         setSuccess("Atendente cadastrado com sucesso!");
@@ -93,7 +99,15 @@ const CadastroAtendenteModal: React.FC<ModalCadastroAtendenteProps> = ({
   return (
     <div className="modal fade show d-block" tabIndex={-1} style={{ background: "rgba(0,0,0,0.3)" }}>
       <div className="modal-dialog">
-        <div className="modal-content" style={{ backgroundColor: "#D5C0A0" }}>
+        <div 
+          className="modal-content"
+          style={{
+            background: "#F5E3C6",
+            border: "2px solid #D2B896",
+            borderRadius: "16px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.2)"
+          }}
+        >
           <div className="modal-header">
             <h5 className="modal-title fw-bold">
               {id ? "Editar Atendente" : "Cadastrar Novo Atendente"}
@@ -101,7 +115,7 @@ const CadastroAtendenteModal: React.FC<ModalCadastroAtendenteProps> = ({
             <button type="button" className="btn-close" onClick={onClose} disabled={loading}></button>
           </div>
           <form onSubmit={handleSubmit}>
-            <div className="modal-body">
+            <div className="modal-body" style={{ borderTop: "2px solid #ceaf76ff", borderBottom: "2px solid #ceaf76ff" }}>
               {erro && <div className="alert alert-danger">{erro}</div>}
               {success && <div className="alert alert-success">{success}</div>}
               <div className="mb-3">

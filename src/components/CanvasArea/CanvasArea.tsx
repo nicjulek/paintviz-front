@@ -48,13 +48,20 @@ const CanvasArea = ({
           style={{
             fontSize: "1.3rem",
             borderRadius: "50%",
-            background: "#D5C0A0",
-            border: "2px solid #C4AE78",
-            color: "#4B3A1A",
-            width: 40,
-            height: 40,
-            padding: 0,
+            background: "linear-gradient(135deg, #D5C0A0 0%, #97876fff 100%)",
+            color: "#5A402A",
+            border: "none",
+            boxShadow: "0 4px 15px rgba(90,64,42,0.3)",
+            transition: "all 0.3s ease",
             marginRight: 32 // aumenta o espaço entre botão e título
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = "translateY(-3px)";
+            e.currentTarget.style.boxShadow = "0 8px 25px rgba(90,64,42,0.4)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 15px rgba(90,64,42,0.3)";
           }}
           onClick={() => handleChangeVisualizacao("prev")}
           disabled={!carroceriaSelecionada}
@@ -73,13 +80,20 @@ const CanvasArea = ({
           style={{
             fontSize: "1.3rem",
             borderRadius: "50%",
-            background: "#D5C0A0",
-            border: "2px solid #C4AE78",
-            color: "#4B3A1A",
-            width: 40,
-            height: 40,
-            padding: 0,
+            background: "linear-gradient(135deg, #D5C0A0 0%, #97876fff 100%)",
+            color: "#5A402A",
+            border: "none",
+            boxShadow: "0 4px 15px rgba(90,64,42,0.3)",
+            transition: "all 0.3s ease",
             marginLeft: 32 // aumenta o espaço entre botão e título
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.transform = "translateY(-3px)";
+            e.currentTarget.style.boxShadow = "0 8px 25px rgba(90,64,42,0.4)";
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "0 4px 15px rgba(90,64,42,0.3)";
           }}
           onClick={() => handleChangeVisualizacao("next")}
           disabled={!carroceriaSelecionada}

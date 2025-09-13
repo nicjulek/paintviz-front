@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
 
   const commonLinks = (
     <Link
-      to="/"
+      to="/galeria"
       className="navbar-brand fs-4 fw-bold text-light d-flex align-items-center"
     >
       <img

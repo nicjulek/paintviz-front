@@ -22,6 +22,8 @@ const FormularioOrdem: React.FC = () => {
     isEdicao
   } = useFormOrdem();
 
+  const hoje = new Date().toISOString().split('T')[0];
+
   console.log("Acesso bloqueado?", bloqueado, "| Edição?", isEdicao);
 
   if (bloqueado && !isEdicao) {
@@ -147,7 +149,6 @@ const FormularioOrdem: React.FC = () => {
             />
           </div>
         </div>
-        {/* Só mostra campos de data se NÃO for pré-ordem */}
         {!isPreOrdem && (
           <div className="row mb-3">
             <div className="col-md-4">
@@ -158,6 +159,7 @@ const FormularioOrdem: React.FC = () => {
                 name="data_emissao"
                 value={form.data_emissao}
                 onChange={handleChange}
+                min={hoje}
                 required
               />
             </div>
@@ -169,6 +171,7 @@ const FormularioOrdem: React.FC = () => {
                 name="data_entrega"
                 value={form.data_entrega}
                 onChange={handleChange}
+                min={hoje}
                 required
               />
             </div>
@@ -180,12 +183,13 @@ const FormularioOrdem: React.FC = () => {
                 name="data_programada"
                 value={form.data_programada}
                 onChange={handleChange}
+                min={hoje}
                 required
               />
             </div>
           </div>
         )}
-        {statusList.find(s => String(s.id_status) === String(form.status))?.descricao === "em_produção" && (
+         {String(form.status) === "3" && (
           <div className="row mb-3">
             <div className="col-md-4">
               <label className="form-label">Número do Box:</label>
