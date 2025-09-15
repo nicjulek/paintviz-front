@@ -33,8 +33,8 @@ O **PaintViz** é um sistema desenvolvido para a fábrica de carrocerias **Carga
 
 ### 1. Clone o repositório
 ```bash
-git clone https://github.com/nicjulek/paintviz-back.git
-cd paintviz-back
+git clone https://github.com/nicjulek/paintviz-front.git
+cd paintviz-front
 ```
 
 ### 2. Instale as dependências
