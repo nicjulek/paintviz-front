@@ -1,69 +1,55 @@
-# PaintViz
+<div align="center">
+  <h1 align="center">🎨 PaintViz 🚚</h1>
+  <strong>Um sistema para visualização e personalização de pinturas em carretas de caminhão.</strong>
+</div>
 
-### Projeto de Sistema de Visualização de Pintura Customizada de Carretas
+<br>
 
 ## Sobre o Projeto
-O **PaintViz** é um sistema desenvolvido para auxiliar a **Carga Pesada**, uma fábrica de carrocerias para caminhões, na personalização e visualização digital das pinturas das carretas. O objetivo principal é proporcionar aos clientes uma experiência interativa na escolha e validação da pintura antes da produção, reduzindo erros e retrabalho.
+O **PaintViz** é um sistema desenvolvido para a fábrica de carrocerias **Carga Pesada**, com o objetivo de modernizar o processo de personalização de pinturas. A plataforma oferece uma solução digital e interativa para que os clientes possam escolher, visualizar e aprovar o design da pintura de suas carretas antes do início da produção, visando a redução de erros, custos e retrabalho.
 
-## Objetivo
-- Desenvolver um software para gerenciamento das informações do processo de pintura e visualização gráfica dos modelos personalizado;
-- Permitir a importação de modelos 2D para edição de cores;
-- Oferecer uma ferramenta de visualização interativa dos modelos pintados.
-
+## Objetivos
+- **Gerenciar** informações do processo de pintura de forma centralizada.
+- **Personalizar** modelos 2D de carretas com um seletor de cores interativo.
+- **Visualizar** o resultado final em uma interface gráfica antes da produção.
+- **Otimizar** a comunicação entre cliente e fábrica, garantindo a satisfação.
+  
 ## Equipe de Desenvolvimento
-- **Flávia Marcela Siqueira** - Desenvolvedora
-- **Maria Luiza Fica Borges** - Desenvolvedora
-- **Nicole Julek Klazura** - Desenvolvedora
 
+| Nome                      | Função        |
+| ------------------------- | ------------- |
+| Flávia Marcela Siqueira   | Desenvolvedora |
+| Maria Luiza Fica Borges   | Desenvolvedora |
+| Nicole Julek Klazura      | Desenvolvedora |
 ---
 
-# Começando com Create React App
+## Pré-requisitos
 
-Este projeto foi inicializado com o [Create React App](https://github.com/facebook/create-react-app).
+- **Node.js**: `v16.0` ou superior
+- **MySQL**: `v8.0` ou superior
+- **NPM** 
 
-## Scripts Disponíveis
+## Instalação
 
-No diretório do projeto, você pode executar:
+### 1. Clone o repositório
+```bash
+git clone https://github.com/nicjulek/paintviz-back.git
+cd paintviz-back
+```
 
-### `npm start`
+### 2. Instale as dependências
+```bash
+npm install
+```
 
-Inicie o aplicativo em modo de desenvolvimento.  
-Abra [http://localhost:3000](http://localhost:3000) para visualizá-lo no navegador.
-
-A página será recarregada se você fizer alterações.  
-
+### 3. Execute 
+```bash
+npm start
+```
 ---
 
-### `npm test`
 
-Executa o runner de testes em modo interativo de observação.  
-Veja a seção sobre [execução de testes](https://facebook.github.io/create-react-app/docs/running-tests) para mais informações.
 
----
-
-### `npm run build`
-
-Cria a versão de produção do aplicativo na pasta `build`.  
-Ele empacota corretamente o React em modo de produção e otimiza a construção para melhor desempenho.
-
-A build é minificada e os nomes dos arquivos incluem hashes.  
-Seu aplicativo está pronto para ser implantado!
-
-Veja a seção sobre [implantação](https://facebook.github.io/create-react-app/docs/deployment) para mais informações.
-
----
-
-### `npm run eject`
-
-**Nota: esta é uma operação sem retorno. Uma vez que você usar `eject`, não pode voltar atrás!**
-
-Se você não estiver satisfeito com a ferramenta de build e as escolhas de configuração, você pode executar `eject` a qualquer momento. Esse comando vai remover a dependência de build única do seu projeto.
-
-Em vez disso, ele vai copiar todos os arquivos de configuração e dependências transitivas (webpack, Babel, ESLint, etc.) diretamente para o seu projeto, para que você tenha controle total sobre eles. Todos os comandos, exceto o `eject`, continuarão funcionando, mas agora eles vão apontar para os scripts copiados, permitindo que você os ajuste. A partir deste ponto, você estará por conta própria.
-
-Você nunca é obrigado a usar o `eject`. O conjunto de recursos pré-configurado é adequado para pequenos e médios projetos, e não é necessário usar essa funcionalidade. No entanto, entendemos que esta ferramenta pode ser útil se você quiser personalizar as configurações quando estiver pronto para isso.
-
----
 
 ## Saiba Mais
 
