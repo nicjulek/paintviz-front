@@ -53,7 +53,7 @@ const CanvasArea = ({
             border: "none",
             boxShadow: "0 4px 15px rgba(90,64,42,0.3)",
             transition: "all 0.3s ease",
-            marginRight: 32 // aumenta o espaço entre botão e título
+            marginRight: 32 
           }}
           onMouseOver={(e) => {
             e.currentTarget.style.transform = "translateY(-3px)";

@@ -111,7 +111,6 @@ export interface CardOrdemProps {
   onAlterarStatus?: (id: number) => void;
 }
 
-// ========= COMPONENT PROPS =========
 export interface InputGenericoProps {
   titulo: string;
   placeholder?: string;
@@ -247,6 +246,41 @@ export interface UseFormClienteProps {
   cliente?: Cliente | null;
   isEditing?: boolean;
   show: boolean;
+}
+
+export interface StatusModalProps {
+  show: boolean;
+  statusList: { id: number; nome: string }[];
+  value: number;
+  statusAtual: number;
+  dataEmissao?: string;
+  dataProgramada?: string;
+  dataEntrega?: string;
+  onDataEmissaoChange?: (v: string) => void;
+  onDataProgramadaChange?: (v: string) => void;
+  onDataEntregaChange?: (v: string) => void;
+  numeroBox?: string;
+  onNumeroBoxChange?: (box: string) => void;
+  onChange: (id: number) => void;
+  onClose: () => void;
+  onConfirm: () => void;
+  loading?: boolean;
+}
+
+export interface PrioriModalProps {
+  show: boolean;
+  value: string;
+  onChange: (data: string) => void;
+  onClose: () => void;
+  onConfirm: () => void;
+  loading?: boolean;
+}
+
+export interface ModalCadastroAtendenteProps {
+  show: boolean;
+  onClose: () => void;
+  onSuccess: () => void;
+  id?: number;
 }
 
 export {};

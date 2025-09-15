@@ -41,7 +41,9 @@ const FormularioOrdem: React.FC = () => {
 
   return (
     <div className="container py-4">
-      <h2 className="mb-4">Cadastro de Ordem de Serviço</h2>
+      <h2 className="mb-4 fw-bold text-center" style={{ color: '#6d4c1c', textShadow: '1px 2px 8px #d5c0a0' }}>
+        <i className="bi bi-truck me-2"></i>
+        Cadastro de Ordem de Serviço</h2>
       <form
         className="p-4 shadow"
         style={{
@@ -189,7 +191,7 @@ const FormularioOrdem: React.FC = () => {
             </div>
           </div>
         )}
-         {String(form.status) === "3" && (
+        {String(form.status) === "3" && (
           <div className="row mb-3">
             <div className="col-md-4">
               <label className="form-label">Número do Box:</label>
@@ -204,11 +206,25 @@ const FormularioOrdem: React.FC = () => {
           </div>
         )}
         <div className="d-flex justify-content-end gap-2">
-          <button type="button" className="btn btn-secondary" onClick={handleVoltar}>
-            <i className="bi bi-arrow-left"></i> Voltar
+          <button type="button" className="btn btn-secondary" onClick={handleVoltar}
+            style={{
+              background: "#93908cff",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "600",
+              padding: "10px 20px"
+            }}>
+            <i className="bi bi-x-circle me-2"></i> Voltar
           </button>
-          <button type="submit" className="btn btn-success" disabled={loading}>
-            <i className="bi bi-check-lg"></i> {loading ? "Salvando..." : "Salvar"}
+          <button type="submit" className="btn btn-success" disabled={loading} style={{
+            background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: "600",
+            padding: "10px 20px",
+            boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+          }}>
+            <i className="bi bi-check-circle me-2"></i> {loading ? "Salvando..." : "Salvar"}
           </button>
         </div>
         {error && <div className="alert alert-danger mt-3">{error}</div>}

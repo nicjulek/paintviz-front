@@ -300,7 +300,7 @@ const FormularioCliente: React.FC<FormularioClienteProps> = ({
                 className="btn btn-secondary"
                 onClick={onClose}
                 style={{
-                  background: "#A68B5B",
+                  background: "#93908cff",
                   border: "none",
                   borderRadius: "8px",
                   fontWeight: "600",
@@ -330,7 +330,7 @@ const FormularioCliente: React.FC<FormularioClienteProps> = ({
                   </>
                 ) : (
                   <>
-                    <i className={`bi ${isEditing ? 'bi-check-lg' : 'bi-plus-lg'} me-2`}></i>
+                    <i className={`bi ${isEditing ? 'bi-check-circle' : 'bi-plus-circle'} me-2`}></i>
                     {isEditing ? 'Atualizar' : 'Salvar'}
                   </>
                 )}

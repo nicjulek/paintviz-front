@@ -1,13 +1,5 @@
 import React from "react";
-
-interface PrioriModalProps {
-  show: boolean;
-  value: string;
-  onChange: (data: string) => void;
-  onClose: () => void;
-  onConfirm: () => void;
-  loading?: boolean;
-}
+import { PrioriModalProps } from "../types/types";
 
 const PrioriModal: React.FC<PrioriModalProps> = ({
   show,
@@ -24,7 +16,7 @@ const PrioriModal: React.FC<PrioriModalProps> = ({
       background: 'rgba(0,0,0,0.3)'
     }}>
       <div className="modal-dialog">
-        <div 
+        <div
           className="modal-content"
           style={{
             background: "#F5E3C6",
@@ -46,10 +38,26 @@ const PrioriModal: React.FC<PrioriModalProps> = ({
             />
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
-              Cancelar
+            <button type="button" className="btn btn-secondary" onClick={onClose}
+              style={{
+                background: "#93908cff",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: "600",
+                padding: "10px 20px"
+              }}>
+              <i className="bi bi-x-circle me-2"></i>
+              Voltar
             </button>
-            <button type="button" className="btn btn-primary" onClick={onConfirm} disabled={loading}>
+            <button type="button" className="btn btn-primary" onClick={onConfirm} disabled={loading} style={{
+              background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "600",
+              padding: "10px 20px",
+              boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+            }}>
+              <i className="bi bi-check-circle me-2"></i>
               {loading ? "Salvando..." : "Salvar"}
             </button>
           </div>

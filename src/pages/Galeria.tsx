@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
 import StatusModal from "../modals/StatusModal";
 import PrioriModal from "../modals/PrioriModal";
-import { useGaleria, statusList, getStatusNome } from "../hooks/useGaleria";
+import { useGaleria, statusList } from "../hooks/useGaleria";
 import SearchBar from "../components/SearchBar/SearchBar";
 import Pagination from "../components/Pagination/Pagination";
 import CardsGrid from "../components/CardsGrid/CardsGrid";
@@ -58,7 +58,10 @@ const Galeria: React.FC = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <main className="flex-grow-1 container-fluid py-2">
-        <h3 className="fw-bold mb-3 ms-1">Galeria de Ordens de Serviço</h3>
+        <h2 className="mb-4 fw-bold text-center" style={{ color: '#6d4c1c', textShadow: '1px 2px 8px #d5c0a0' }}>
+          <i className="bi bi-collection me-2"></i>
+          Galeria de Ordens de Serviço
+        </h2>
         
         <SearchBar
           search={search}

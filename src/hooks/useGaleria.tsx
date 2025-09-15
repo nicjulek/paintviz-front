@@ -22,13 +22,11 @@ export function useGaleria() {
   const [loading, setLoading] = useState(true);
   const [alterando, setAlterando] = useState(false);
 
-  // Estados do filtro/busca
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [filtro, setFiltro] = useState<"nome" | "data_entrega" | "veiculo" | "status">("nome");
   const [sortAsc, setSortAsc] = useState(true);
 
-  // Estados dos modais
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showPrioriModal, setShowPrioriModal] = useState(false);
   const [modalOrdemId, setModalOrdemId] = useState<number | null>(null);
@@ -144,14 +142,12 @@ export function useGaleria() {
     return ordensFiltradas;
   };
 
-  // Função para paginar ordens
   const paginarOrdens = (ordensOrdenadas: any[], cardsPerPage: number) => {
     const totalPages = Math.ceil(ordensOrdenadas.length / cardsPerPage);
     const paginatedOrdens = ordensOrdenadas.slice((page - 1) * cardsPerPage, page * cardsPerPage);
     return { paginatedOrdens, totalPages };
   };
 
-  // Handlers dos modais
   const openStatusModal = (ordem: any) => {
     setModalOrdemId(ordem.id_ordem_servico);
     setModalStatusId(ordem.id_status);
@@ -234,13 +230,10 @@ export function useGaleria() {
   }
 
   return {
-    // Estados principais
     ordens,
     setOrdens,
     loading,
     alterando,
-
-    // Estados de filtro/busca
     page,
     setPage,
     search,
@@ -249,8 +242,6 @@ export function useGaleria() {
     setFiltro,
     sortAsc,
     setSortAsc,
-
-    // Estados dos modais
     showStatusModal,
     setShowStatusModal,
     showPrioriModal,
@@ -266,8 +257,6 @@ export function useGaleria() {
     setModalDataEntrega,
     modalNumeroBox,
     setModalNumeroBox,
-
-    // Funções utilitárias
     filtrarOrdens,
     ordenarOrdens,
     paginarOrdens,

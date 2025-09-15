@@ -70,7 +70,7 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
     if (!show) return null;
 
     return (
-        <div className="modal show d-block" tabIndex={-1} style={{ background: "rgba(0,0,0,0.5)" }}>
+        <div className="modal fade show" style={{ display: "block", background: "#0008" }}>
             <div className="modal-dialog modal-lg">
                 <div
                     className="modal-content"
@@ -82,7 +82,10 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                     }}
                 >
                     <div className="modal-header">
-                        <h5 className="modal-title">{isEdit ? "Editar Paleta" : "Criar Nova Paleta"}</h5>
+                        <h5 className="modal-title fw-bold">
+                            <i className="bi bi-palette me-2"></i>
+                            {isEdit ? "Editar Paleta" : "Criar Nova Paleta"}
+                        </h5>
                         <button type="button" className="btn-close" onClick={onClose} />
                     </div>
                     <div className="modal-body" style={{ borderTop: "2px solid #ceaf76ff", borderBottom: "2px solid #ceaf76ff" }}>
@@ -125,7 +128,10 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                                 onChange={setNomePaleta}
                             />
                         </div>
-                        <label className="form-label fw-bold">Cores da Paleta:</label>
+                        <label className="form-label fw-bold">
+                            <i className="bi bi-droplet me-2"></i>
+                            Cores da Paleta
+                        </label>
                         <div className="d-flex flex-row flex-wrap paleta-modal-flex">
                             <div style={{ flex: 1, minWidth: 220 }}>
                                 {cores.map((cor, idx) => (
@@ -145,7 +151,11 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                                             placeholder="Nome da Cor"
                                             value={cor.nome_cor}
                                             onChange={e => handleCorChange(idx, e.target.value)}
-                                            style={{ maxWidth: 300 }}
+                                            style={{
+                                                maxWidth: 300,
+                                                borderRadius: "6px",
+                                                border: "1px solid #D2B896"
+                                            }}
                                         />
                                         <button
                                             type="button"
@@ -164,31 +174,33 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                                         />
                                         <button
                                             type="button"
-                                            className="btn btn-outline-danger"
+                                            className="btn btn-outline-danger btn-sm"
                                             onClick={() => handleRemoveCor(idx)}
                                             disabled={cores.length <= 1}
                                             title="Remover cor"
+                                            style={{ borderRadius: "6px" }}
                                         >
                                             <i className="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 ))}
-                                <div className="text-center mb-3" style={{ color: '#6b4226', width: 400 }}>
+                                <div className="text-muted small mb-3" style={{ width: 400 }}>
+                                    <i className="bi bi-info-circle me-1"></i>
                                     Clique na bolinha e selecione uma cor
                                 </div>
                                 <button
                                     type="button"
-                                    className="btn btn-primary mt-2"
+                                    className="btn btn-primary mt-2 d-flex align-items-center"
                                     style={{
                                         width: 400,
-                                        padding: "4px 8px"
+                                        padding: "4px 8px",
+                                        borderRadius: "8px"
                                     }}
                                     onClick={handleAddCor}
                                 >
                                     <i className="bi bi-plus-circle me-2"></i>
                                     Adicionar mais cores
                                 </button>
-
                             </div>
                             <div className="d-flex justify-content-center mb-3 paleta-modal-colorpicker" style={{ marginLeft: 0, flex: "0 0 300px" }}>
                                 <div style={{
@@ -210,8 +222,37 @@ const PaletaModal: React.FC<PaletaModalProps> = ({
                         </div>
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" onClick={onClose}>Voltar</button>
-                        <button type="button" className="btn btn-success" onClick={handleSave}>Salvar</button>
+                        <button
+                            type="button"
+                            className="btn btn-secondary d-flex align-items-center"
+                            onClick={onClose}
+                            style={{
+                                background: "#93908cff",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: "600",
+                                padding: "10px 20px"
+                            }}
+                        >
+                            <i className="bi bi-x-circle me-2"></i>
+                            Voltar
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-success d-flex align-items-center"
+                            onClick={handleSave}
+                            style={{
+                                background: "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+                                border: "none",
+                                borderRadius: "8px",
+                                fontWeight: "600",
+                                padding: "10px 20px",
+                                boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+                            }}
+                        >
+                            <i className="bi bi-check-circle me-2"></i>
+                            Salvar
+                        </button>
                     </div>
                 </div>
             </div>

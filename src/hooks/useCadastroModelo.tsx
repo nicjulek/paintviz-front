@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Peca, Carroceria } from '../types/types';
@@ -21,13 +21,7 @@ export const useCadastroModelo = () => {
   const { id } = useParams();
   const isEdicao = !!id;
 
-  useEffect(() => {
-    if (id) {
-      carregarDadosModelo();
-    }
-  }, [id]);
-
-  const carregarDadosModelo = async () => {
+   const carregarDadosModelo = useCallback(async () => {
     setCarregandoDados(true);
     try {
       const token = localStorage.getItem('token');
@@ -64,7 +58,13 @@ export const useCadastroModelo = () => {
     } finally {
       setCarregandoDados(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      carregarDadosModelo();
+    }
+  }, [id, carregarDadosModelo]);
 
   const handleAddPeca = () => {
     setPecas(prev => [
@@ -126,7 +126,7 @@ export const useCadastroModelo = () => {
       let carroceriaId = Number(id);
 
       if (isEdicao) {
-        // ATUALIZAR modelo existente
+        // Atualizar modelo existente
         const dadosAtualizacao: any = {
           nome_modelo: nomeModelo.trim()
         };
@@ -163,7 +163,7 @@ export const useCadastroModelo = () => {
         }
 
       } else {
-        // CRIAR novo modelo
+        // Criar novo modelo
         const lateralStr = await fileToBase64(lateralSVG!);
         const traseiraStr = await fileToBase64(traseiraSVG!);
         const diagonalStr = await fileToBase64(diagonalSVG!);
@@ -223,12 +223,10 @@ export const useCadastroModelo = () => {
     loading,
     carregandoDados,
     isEdicao,
-
     setNomeModelo,
     setLateralSVG,
     setTraseiraSVG,
     setDiagonalSVG,
-
     handleAddPeca,
     handleVoltar,
     handlePecaChange,

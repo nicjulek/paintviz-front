@@ -40,6 +40,10 @@ const CadastroModelos = () => {
 
   return (
     <div style={{ background: '#F5E3C6', minHeight: '100vh', padding: 0 }}>
+      <h2 className="mb-4 fw-bold text-center" style={{ color: '#6d4c1c', textShadow: '1px 2px 8px #d5c0a0' }}>
+          <i className="bi bi-truck me-2"></i>
+          {isEdicao ? 'Editar Modelo de Carroceria' : 'Cadastro de Modelo de Carroceria'}
+        </h2>
       <div className="container py-4">
         <div className="mb-4" style={{
           background: '#D5C0A0',
@@ -47,9 +51,6 @@ const CadastroModelos = () => {
           boxShadow: '0 2px 8px #0002',
           padding: '2rem'
         }}>
-          <h4 className="fw-bold mb-3" style={{ color: '#4B3A1A' }}>
-            {isEdicao ? 'Editar Modelo de Carroceria' : 'Cadastro de Modelo de Carroceria'}
-          </h4>
           <div className="mb-3">
             <label className="fw-bold mb-2" htmlFor="nome-modelo" style={{ color: '#4B3A1A' }}>
               Nome do Modelo: <span style={{ color: '#c00' }}>*</span>
@@ -160,6 +161,14 @@ const CadastroModelos = () => {
             className="btn btn-success"
             onClick={handleSalvar}
             disabled={loading}
+            style={{
+                  background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  padding: "10px 20px",
+                  boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+                }}
           >
             {loading ? (
               <>
@@ -168,7 +177,7 @@ const CadastroModelos = () => {
               </>
             ) : (
               <>
-                <i className="bi bi-save me-2"></i>
+                <i className="bi bi-check-circle me-2"></i>
                 {isEdicao ? 'Atualizar' : 'Salvar'}
               </>
             )}

@@ -27,8 +27,6 @@ export function useFormOrdem() {
     const [bloqueado, setBloqueado] = useState<boolean>(false);
     const navigate = useNavigate();
     const location = useLocation();
-
-    // Verifica se é edição
     const params = new URLSearchParams(location.search);
     const idOrdem = params.get("id_ordem");
     const isEdicao = !!idOrdem;
@@ -50,11 +48,10 @@ export function useFormOrdem() {
         }
     };
 
-    // Busca dados da ordem se for edição
     useEffect(() => {
         fetchData();
         if (isEdicao) {
-            setBloqueado(false); // Libera acesso para edição
+            setBloqueado(false); 
             axios.get(`${API_URL}/ordem-servico/${idOrdem}`)
                 .then(res => {
                     const ordem = res.data;
@@ -74,7 +71,6 @@ export function useFormOrdem() {
                 })
                 .catch(() => setError("Erro ao carregar ordem para edição."));
         } else {
-            // Cadastro: bloqueia se não tem pintura
             const idPintura = localStorage.getItem("id_pintura");
             setBloqueado(!idPintura);
         }
@@ -88,12 +84,9 @@ export function useFormOrdem() {
         if (isEdicao) {
             navigate(-1);
         } else {
-            const idPintura = localStorage.getItem("id_pintura");
-            if (idPintura && idPintura !== "undefined" && idPintura !== "") {
-                navigate(`/pintura?id_pintura=${idPintura}`);
-            } else {
-                navigate("/pintura");
-            }
+            localStorage.removeItem("id_pintura");
+            console.log("ID da pintura removido - usuário cancelou o cadastro da ordem");
+            navigate("/pintura");
         }
     };
 
@@ -132,7 +125,6 @@ export function useFormOrdem() {
     payload.data_programada = form.data_programada && form.data_programada.trim() !== "" ? form.data_programada : dataHoje;
     payload.placa_veiculo = form.placa_veiculo;
 
-    // Só envia numero_box se status for 3 (Em Produção) e valor não vazio
     if (String(form.status) === "3") {
         const numeroBoxLimpo = form.numero_box.trim();
         if (numeroBoxLimpo !== "") {
@@ -144,12 +136,10 @@ export function useFormOrdem() {
         }
     }
 
-    // Nunca envia numero_box se status não for 3
     if (String(form.status) !== "3" && "numero_box" in payload) {
         delete payload.numero_box;
     }
 
-    // Log para depuração
     console.log("Status selecionado:", form.status);
     console.log("Payload enviado:", payload);
 
@@ -187,6 +177,6 @@ export function useFormOrdem() {
         handleSubmit,
         fetchData,
         isPreOrdem,
-        isEdicao // exporta para uso no formulário
+        isEdicao 
     };
 }

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Peca, Cor } from "../../types/types";
+import { Peca } from "../../types/types";
 import ColorPicker from "../ColorPicker/ColorPicker";
 import PaletaModal from "../../modals/PaletaModal";
 import { usePaleta } from "../../hooks/usePaleta";
@@ -11,7 +11,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
     setMenuAberto,
     renderCarroceriaSelector,
     renderTipoVisualizacao,
-    renderPaletaCores,
     renderListaPecas,
     pecaSelecionada,
     pecas,
@@ -24,8 +23,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
 }) => {
     const [carroceriaOpen, setCarroceriaOpen] = useState(false);
     const [paletaOpen, setPaletaOpen] = useState(false);
-
-    // Use o hook usePaleta
     const {
         paletas,
         paletaSelecionada,
@@ -92,7 +89,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 </div>
                 {menuAberto && (
                     <div className="card-body px-3 py-4" style={{ background: "transparent" }}>
-                        {/* Paleta & Peças PRIMEIRO */}
+                        {/* Paleta & Peças */}
                         <div className="mb-3">
                             <button
                                 className={`btn w-100 mb-2 text-start border-0 shadow-sm d-flex align-items-center justify-content-between ${paletaOpen ? "bg-paintviz-brown text-light" : "bg-paintviz-light text-paintviz-brown"}`}
@@ -153,7 +150,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                     Editar Paleta
                                                 </button>
                                             </div>
-                                            <div className="mb-2">
+                                            <div className="mb-2 position-relative">
                                                 <select
                                                     className="form-select form-select-sm w-100"
                                                     style={{
@@ -162,7 +159,10 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                         borderRadius: '0.5rem',
                                                         boxShadow: '0 1px 4px #c4ae7822',
                                                         minWidth: 0,
-                                                        flex: 1
+                                                        flex: 1,
+                                                        paddingRight: '2.5rem',
+                                                        appearance: 'none',
+                                                        backgroundImage: 'none'
                                                     }}
                                                     value={paletaSelecionada ?? ""}
                                                     onChange={e => handleEscolherPaleta(Number(e.target.value))}
@@ -174,7 +174,20 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                         </option>
                                                     ))}
                                                 </select>
+                                                <div
+                                                    className="position-absolute top-50 translate-middle-y"
+                                                    style={{
+                                                        right: '12px',
+                                                        pointerEvents: 'none',
+                                                        color: '#6c757d',
+                                                        fontSize: '0.9rem'
+                                                    }}
+                                                >
+                                                    <i className="bi bi-chevron-down"></i>
+                                                </div>
                                             </div>
+
+
                                         </div>
                                         <PaletaModal
                                             show={showPaletaModal}
@@ -198,8 +211,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                         justifyContent: 'center',
                                                         boxShadow: corSelecionada === cor.cod_cor ? '0 2px 8px #6b422644' : 'none',
                                                         cursor: 'pointer',
-                                                        background: 'transparent', // removido branco
-                                                        padding: 0 // sem espaço extra
+                                                        background: 'transparent', 
+                                                        padding: 0 
                                                     }}
                                                     onClick={() => handleColorChange(cor.cod_cor)}
                                                     title={cor.nome_cor}
@@ -227,7 +240,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                 </div>
                             )}
                         </div>
-                        {/* Opções de Carroceria DEPOIS */}
+                        {/* Opções de Carrocerias */}
                         <div className="mb-3">
                             <button
                                 className={`btn w-100 mb-2 text-start border-0 shadow-sm d-flex align-items-center justify-content-between ${carroceriaOpen ? "bg-paintviz-brown text-light" : "bg-paintviz-light text-paintviz-brown"}`}
@@ -266,9 +279,16 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                 className="btn btn-success border-0 shadow-sm d-flex align-items-center justify-content-center"
                                 onClick={handleSalvar}
                                 disabled={loading}
-                                style={{ borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.08rem' }}
+                                style={{
+                                    background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: "600",
+                                    padding: "10px 20px",
+                                    boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+                                }}
                             >
-                                <i className="bi bi-check-lg me-2"></i>
+                                <i className="bi bi-check-circle me-2"></i>
                                 {loading ? (
                                     <>
                                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -280,9 +300,14 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                 className="btn btn-danger border-0 shadow-sm d-flex align-items-center justify-content-center"
                                 onClick={handleDescartar}
                                 disabled={loading || Object.keys(coresAplicadas).length === 0}
-                                style={{ borderRadius: '0.5rem', fontWeight: 'bold', fontSize: '1.08rem' }}
+                                style={{
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    fontWeight: "600",
+                                    padding: "10px 20px"
+                                }}
                             >
-                                <i className="bi bi-x-lg me-2"></i>
+                                <i className="bi bi-x-circle me-2"></i>
                                 Descartar Alterações
                             </button>
                         </div>
