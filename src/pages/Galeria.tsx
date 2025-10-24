@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
 import StatusModal from "../modals/StatusModal";
 import PrioriModal from "../modals/PrioriModal";
-import { useGaleria, statusList } from "../hooks/useGaleria";
+import { useGaleria, statusList, periodOptions } from "../hooks/useGaleria";
 import SearchBar from "../components/SearchBar/SearchBar";
 import Pagination from "../components/Pagination/Pagination";
 import CardsGrid from "../components/CardsGrid/CardsGrid";
@@ -23,6 +23,15 @@ const Galeria: React.FC = () => {
     setFiltro,
     sortAsc,
     setSortAsc,
+    filtroStatus,
+    setFiltroStatus,
+    filtroPeriodo,
+    setFiltroPeriodo,
+    dataInicio,
+    setDataInicio,
+    dataFim,
+    setDataFim,
+    limparFiltros,
     showStatusModal,
     setShowStatusModal,
     showPrioriModal,
@@ -71,7 +80,74 @@ const Galeria: React.FC = () => {
           sortAsc={sortAsc}
           setSortAsc={setSortAsc}
           setPage={setPage}
+          filtroStatus={filtroStatus}
+          setFiltroStatus={setFiltroStatus}
+          filtroPeriodo={filtroPeriodo}
+          setFiltroPeriodo={setFiltroPeriodo}
+          dataInicio={dataInicio}
+          setDataInicio={setDataInicio}
+          dataFim={dataFim}
+          setDataFim={setDataFim}
+          limparFiltros={limparFiltros}
         />
+        
+        {/* Indicador de resultados */}
+        <div className="mb-4">
+          <div 
+            className="d-flex align-items-center justify-content-between p-3 rounded-3"
+            style={{
+              background: 'linear-gradient(135deg, rgba(213, 192, 160, 0.3) 0%, rgba(196, 176, 148, 0.3) 100%)',
+              border: '1px solid rgba(79, 56, 37, 0.2)',
+              backdropFilter: 'blur(10px)'
+            }}
+          >
+            <div className="d-flex align-items-center">
+              <i className="bi bi-info-circle-fill me-2" style={{ color: '#4F3825', fontSize: '1.2rem' }}></i>
+              <span style={{ color: '#4F3825', fontSize: '1rem', fontWeight: '600' }}>
+                Exibindo <strong>{paginatedOrdens.length}</strong> de <strong>{ordensFiltradas.length}</strong> ordens
+              </span>
+            </div>
+            
+            <div className="d-flex gap-2">
+              {filtroStatus !== "todos" && (
+                <span 
+                  className="badge px-3 py-2"
+                  style={{
+                    backgroundColor: '#4F3825',
+                    color: '#D5C0A0',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    borderRadius: '20px'
+                  }}
+                >
+                  <i className="bi bi-funnel-fill me-1"></i>
+                  {filtroStatus === "aberto" ? "Em aberto" : 
+                   filtroStatus === "finalizado" ? "Finalizadas" : 
+                   filtroStatus}
+                </span>
+              )}
+              {filtroPeriodo !== "all" && (
+                <span 
+                  className="badge px-3 py-2"
+                  style={{
+                    backgroundColor: '#0d6efd',
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    borderRadius: '20px'
+                  }}
+                >
+                  <i className="bi bi-calendar3 me-1"></i>
+                  {filtroPeriodo === "month" ? "Último mês" :
+                   filtroPeriodo === "week" ? "Última semana" :
+                   filtroPeriodo === "today" ? "Hoje" :
+                   filtroPeriodo === "custom" ? "Período personalizado" :
+                   periodOptions.find(p => p.value === filtroPeriodo)?.label || filtroPeriodo}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
         
         <CardsGrid
           ordens={paginatedOrdens}

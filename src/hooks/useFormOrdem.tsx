@@ -9,9 +9,22 @@ export function useFormOrdem() {
     const [usuarios, setUsuarios] = useState<any[]>([]);
     const [showModal, setShowModal] = useState(false);
     const [statusList, setStatusList] = useState<any[]>([]);
+    
+    // Obter usuário logado apenas uma vez na inicialização
+    const getUsuarioLogado = () => {
+        try {
+            const stored = localStorage.getItem('user');
+            return stored ? JSON.parse(stored) : null;
+        } catch {
+            return null;
+        }
+    };
+
+    const usuarioLogado = getUsuarioLogado();
+
     const [form, setForm] = useState({
         id_cliente: "",
-        id_usuario_responsavel: "",
+        id_usuario_responsavel: usuarioLogado?.id ? String(usuarioLogado.id) : "",
         modelo_veiculo: "",
         placa_veiculo: "",
         identificacao_veiculo: "",
@@ -22,6 +35,7 @@ export function useFormOrdem() {
         id_pintura: localStorage.getItem("id_pintura") || "",
         numero_box: ""
     });
+    
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [bloqueado, setBloqueado] = useState<boolean>(false);
@@ -177,6 +191,7 @@ export function useFormOrdem() {
         handleSubmit,
         fetchData,
         isPreOrdem,
-        isEdicao 
+        isEdicao,
+        usuarioLogado
     };
 }

@@ -17,6 +17,18 @@ export function getStatusNome(id_status: number) {
   return status ? status.nome : String(id_status);
 }
 
+// Opções de período
+export const periodOptions = [
+  { value: "all", label: "Todos os períodos" },
+  { value: "today", label: "Hoje" },
+  { value: "week", label: "Última semana" },
+  { value: "month", label: "Último mês" },
+  { value: "3months", label: "Últimos 3 meses" },
+  { value: "6months", label: "Últimos 6 meses" },
+  { value: "year", label: "Último ano" },
+  { value: "custom", label: "Período personalizado" }
+];
+
 export function useGaleria() {
   const [ordens, setOrdens] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,8 +36,13 @@ export function useGaleria() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [filtro, setFiltro] = useState<"nome" | "data_entrega" | "veiculo" | "status">("nome");
-  const [sortAsc, setSortAsc] = useState(true);
+  const [filtro, setFiltro] = useState<"nome" | "data_entrega" | "veiculo" | "status">("data_entrega");
+  const [sortAsc, setSortAsc] = useState(false); // Mais recentes primeiro por padrão
+  
+  const [filtroStatus, setFiltroStatus] = useState<string>("aberto"); // Filtro padrão para ordens em aberto
+  const [filtroPeriodo, setFiltroPeriodo] = useState<string>("month"); // Último mês por padrão
+  const [dataInicio, setDataInicio] = useState<string>("");
+  const [dataFim, setDataFim] = useState<string>("");
 
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showPrioriModal, setShowPrioriModal] = useState(false);
@@ -66,7 +83,38 @@ export function useGaleria() {
     fetchOrdens();
   }, []);
 
-  // Função para filtrar ordens
+  // função para calcular data de início baseada no período selecionado
+  const getDataInicioByPeriod = (periodo: string): Date | null => {
+    const hoje = new Date();
+    switch (periodo) {
+      case "today":
+        return new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+      case "week":
+        const semana = new Date(hoje);
+        semana.setDate(hoje.getDate() - 7);
+        return semana;
+      case "month":
+        const mes = new Date(hoje);
+        mes.setMonth(hoje.getMonth() - 1);
+        return mes;
+      case "3months":
+        const tresMeses = new Date(hoje);
+        tresMeses.setMonth(hoje.getMonth() - 3);
+        return tresMeses;
+      case "6months":
+        const seisMeses = new Date(hoje);
+        seisMeses.setMonth(hoje.getMonth() - 6);
+        return seisMeses;
+      case "year":
+        const ano = new Date(hoje);
+        ano.setFullYear(hoje.getFullYear() - 1);
+        return ano;
+      default:
+        return null;
+    }
+  };
+
+  // função para filtrar ordens
   const filtrarOrdens = () => {
     return ordens.filter(ordem => {
       const nome =
@@ -78,31 +126,71 @@ export function useGaleria() {
       const dataEntrega = ordem.data_entrega || "";
       const status = ordem.id_status || "";
 
-      if (filtro === "nome") {
-        return nome.toLowerCase().includes(search.toLowerCase());
-      }
-      if (filtro === "veiculo") {
-        return veiculo.toLowerCase().includes(search.toLowerCase());
-      }
-      if (filtro === "data_entrega") {
-        return dataEntrega.toLowerCase().includes(search.toLowerCase());
-      }
-      if (filtro === "status") {
-        if (search.trim() !== "") {
+      // filtro por texto de pesquisa
+      let passaFiltroTexto = true;
+      if (search.trim()) {
+        if (filtro === "nome") {
+          passaFiltroTexto = nome.toLowerCase().includes(search.toLowerCase());
+        } else if (filtro === "veiculo") {
+          passaFiltroTexto = veiculo.toLowerCase().includes(search.toLowerCase());
+        } else if (filtro === "data_entrega") {
+          passaFiltroTexto = dataEntrega.toLowerCase().includes(search.toLowerCase());
+        } else if (filtro === "status") {
           const statusObj = statusList.find(s =>
             s.nome.toLowerCase().includes(search.toLowerCase()) ||
             String(s.id) === search.trim()
           );
-          if (!statusObj) return false;
-          return String(status) === String(statusObj.id);
+          if (!statusObj) {
+            passaFiltroTexto = false;
+          } else {
+            passaFiltroTexto = String(status) === String(statusObj.id);
+          }
         }
-        return true;
       }
-      return true;
+
+      // filtro por status
+      let passaFiltroStatus = true;
+      if (filtroStatus !== "todos") {
+        if (filtroStatus === "aberto") {
+          // considera "em aberto": Pré-Ordem, Aberta, Em produção
+          passaFiltroStatus = ["1", "2", "3"].includes(String(status));
+        } else if (filtroStatus === "finalizado") {
+          // considera "finalizado": Finalizada, Cancelada
+          passaFiltroStatus = ["4", "5"].includes(String(status));
+        } else {
+          passaFiltroStatus = String(status) === filtroStatus;
+        }
+      }
+
+      // filtro por período
+      let passaFiltroPeriodo = true;
+      if (filtroPeriodo !== "all") {
+        if (filtroPeriodo === "custom") {
+          // período personalizado
+          if (dataInicio || dataFim) {
+            const dataOrdem = new Date(ordem.data_entrega || ordem.data_emissao);
+            if (dataInicio && dataOrdem < new Date(dataInicio)) {
+              passaFiltroPeriodo = false;
+            }
+            if (dataFim && dataOrdem > new Date(dataFim)) {
+              passaFiltroPeriodo = false;
+            }
+          }
+        } else {
+          // período predefinido
+          const dataInicioCalc = getDataInicioByPeriod(filtroPeriodo);
+          if (dataInicioCalc) {
+            const dataOrdem = new Date(ordem.data_entrega || ordem.data_emissao);
+            passaFiltroPeriodo = dataOrdem >= dataInicioCalc;
+          }
+        }
+      }
+
+      return passaFiltroTexto && passaFiltroStatus && passaFiltroPeriodo;
     });
   };
 
-  // Função para ordenar ordens
+  // função para ordenar ordens
   const ordenarOrdens = (ordensFiltradas: any[]) => {
     if (filtro === "data_entrega") {
       return ordensFiltradas.sort((a, b) => {
@@ -229,6 +317,16 @@ export function useGaleria() {
     }
   }
 
+  // função para limpar filtros
+  const limparFiltros = () => {
+    setSearch("");
+    setFiltroStatus("aberto");
+    setFiltroPeriodo("month");
+    setDataInicio("");
+    setDataFim("");
+    setPage(1);
+  };
+
   return {
     ordens,
     setOrdens,
@@ -242,6 +340,15 @@ export function useGaleria() {
     setFiltro,
     sortAsc,
     setSortAsc,
+    filtroStatus,
+    setFiltroStatus,
+    filtroPeriodo,
+    setFiltroPeriodo,
+    dataInicio,
+    setDataInicio,
+    dataFim,
+    setDataFim,
+    limparFiltros,
     showStatusModal,
     setShowStatusModal,
     showPrioriModal,
