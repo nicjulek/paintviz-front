@@ -2,6 +2,7 @@ import React from 'react';
 import CadastroPecas from '../components/CadastroPecas/CadastroPecas';
 import SvgUpload from '../components/SvgUpload/SvgUpload';
 import { useCadastroModelo } from '../hooks/useCadastroModelo';
+import { Tooltip } from '../components/Tooltip';
 
 const CadastroModelos = () => {
   const {
@@ -24,7 +25,6 @@ const CadastroModelos = () => {
     handleSalvar
   } = useCadastroModelo();
 
-  // Mostra loading enquanto carrega dados para edição
   if (carregandoDados) {
     return (
       <div style={{ background: '#F5E3C6', minHeight: '100vh', padding: 0 }}>
@@ -40,19 +40,31 @@ const CadastroModelos = () => {
 
   return (
     <div style={{ background: '#F5E3C6', minHeight: '100vh', padding: 0 }}>
-      <h2 className="mb-4 fw-bold text-center" style={{ color: '#6d4c1c', textShadow: '1px 2px 8px #d5c0a0' }}>
-          <i className="bi bi-truck me-2"></i>
-          {isEdicao ? 'Editar Modelo de Carroceria' : 'Cadastro de Modelo de Carroceria'}
-        </h2>
+      <h2
+        className="mb-4 fw-bold text-center"
+        style={{ color: '#6d4c1c', textShadow: '1px 2px 8px #d5c0a0' }}
+      >
+        <i className="bi bi-truck me-2"></i>
+        {isEdicao ? 'Editar Modelo de Carroceria' : 'Cadastro de Modelo de Carroceria'}
+      </h2>
+
       <div className="container py-4">
-        <div className="mb-4" style={{
-          background: '#D5C0A0',
-          borderRadius: '12px',
-          boxShadow: '0 2px 8px #0002',
-          padding: '2rem'
-        }}>
+        {/* Bloco de nome do modelo */}
+        <div
+          className="mb-4"
+          style={{
+            background: '#D5C0A0',
+            borderRadius: '12px',
+            boxShadow: '0 2px 8px #0002',
+            padding: '2rem'
+          }}
+        >
           <div className="mb-3">
-            <label className="fw-bold mb-2" htmlFor="nome-modelo" style={{ color: '#4B3A1A' }}>
+            <label
+              className="fw-bold mb-2"
+              htmlFor="nome-modelo"
+              style={{ color: '#4B3A1A' }}
+            >
               Nome do Modelo: <span style={{ color: '#c00' }}>*</span>
             </label>
             <input
@@ -61,7 +73,7 @@ const CadastroModelos = () => {
               className="form-control"
               placeholder="Nome do modelo da carroceria"
               value={nomeModelo}
-              onChange={e => setNomeModelo(e.target.value)}
+              onChange={(e) => setNomeModelo(e.target.value)}
               disabled={loading}
               style={{
                 width: '100%',
@@ -73,8 +85,13 @@ const CadastroModelos = () => {
               }}
             />
           </div>
+
+          {/* Bloco de uploads SVG */}
           <div className="mb-4">
-            <h5 className="fw-bold" style={{ color: '#4B3A1A', fontSize: '1rem' }}>
+            <h5
+              className="fw-bold"
+              style={{ color: '#4B3A1A', fontSize: '1rem' }}
+            >
               Arquivos SVG {isEdicao && <small className="text-muted">(deixe em branco para manter os atuais)</small>}
             </h5>
 
@@ -82,33 +99,40 @@ const CadastroModelos = () => {
               className="d-flex flex-wrap justify-content-center gap-4"
               style={{ width: '100%' }}
             >
-              <SvgUpload
-                id="lateral-svg-upload"
-                label="Lateral"
-                file={lateralSVG}
-                onFileChange={setLateralSVG}
-                disabled={loading}
-              />
-              
-              <SvgUpload
-                id="traseira-svg-upload"
-                label="Traseira"
-                file={traseiraSVG}
-                onFileChange={setTraseiraSVG}
-                disabled={loading}
-              />
-              
-              <SvgUpload
-                id="diagonal-svg-upload"
-                label="Diagonal"
-                file={diagonalSVG}
-                onFileChange={setDiagonalSVG}
-                disabled={loading}
-              />
+              <Tooltip helpText="Faça upload do SVG lateral do modelo">
+                <SvgUpload
+                  id="lateral-svg-upload"
+                  label="Lateral"
+                  file={lateralSVG}
+                  onFileChange={setLateralSVG}
+                  disabled={loading}
+                />
+              </Tooltip>
+
+              <Tooltip helpText="Faça upload do SVG traseiro do modelo">
+                <SvgUpload
+                  id="traseira-svg-upload"
+                  label="Traseira"
+                  file={traseiraSVG}
+                  onFileChange={setTraseiraSVG}
+                  disabled={loading}
+                />
+              </Tooltip>
+
+              <Tooltip helpText="Faça upload do SVG diagonal do modelo">
+                <SvgUpload
+                  id="diagonal-svg-upload"
+                  label="Diagonal"
+                  file={diagonalSVG}
+                  onFileChange={setDiagonalSVG}
+                  disabled={loading}
+                />
+              </Tooltip>
             </div>
           </div>
         </div>
 
+        {/* Bloco de peças */}
         <div
           className="mb-4"
           style={{
@@ -118,21 +142,27 @@ const CadastroModelos = () => {
             padding: '2rem'
           }}
         >
-          <h4 className="fw-bold mb-3" style={{ color: '#4B3A1A' }}>
-            {isEdicao ? 'Editar peças' : 'Cadastro das peças'}
-          </h4>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+            <h4 className="fw-bold mb-0" style={{ color: '#4B3A1A' }}>
+              {isEdicao ? 'Editar peças' : 'Cadastro das peças'}
+            </h4>
+            <Tooltip helpText="Todas as peças cadastradas devem estar presentes no .svg">
+               <span style={{ display: 'inline-block', width: '1rem', height: '1rem' }} />
+            </Tooltip>
+          </div>
           <div className="row g-2">
             {pecas.map((peca, index) => (
               <CadastroPecas
                 key={index}
                 nomeModelo={peca.nome_peca}
                 idSVG={peca.id_svg}
-                onChangeNome={nome => handlePecaChange(index, nome)}
-                onChangeIdSVG={idSVG => handlePecaChange(index, undefined, idSVG)}
+                onChangeNome={(nome) => handlePecaChange(index, nome)}
+                onChangeIdSVG={(idSVG) => handlePecaChange(index, undefined, idSVG)}
                 onDescartar={() => handleDescartarPeca(index)}
               />
             ))}
           </div>
+
           <div className="mt-3">
             <button
               type="button"
@@ -146,6 +176,7 @@ const CadastroModelos = () => {
           </div>
         </div>
 
+        {/* Botões de ação */}
         <div className="d-flex gap-2 mt-2">
           <button
             type="button"
@@ -156,19 +187,20 @@ const CadastroModelos = () => {
             <i className="bi bi-arrow-left-circle me-2"></i>
             Voltar
           </button>
+
           <button
             type="button"
             className="btn btn-success"
             onClick={handleSalvar}
             disabled={loading}
             style={{
-                  background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontWeight: "600",
-                  padding: "10px 20px",
-                  boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
-                }}
+              background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+              border: "none",
+              borderRadius: "8px",
+              fontWeight: "600",
+              padding: "10px 20px",
+              boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+            }}
           >
             {loading ? (
               <>

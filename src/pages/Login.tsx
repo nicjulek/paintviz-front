@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import '../App.css';
 import axios from "axios";
+import { Tooltip } from "../components/Tooltip";
 
 interface LoginProps {
   onLoginSuccess: (user: any) => void;
@@ -106,91 +107,105 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
                 )}
 
                 <form onSubmit={handleLogin}>
-                  <div className="mb-3">
-                    <label htmlFor="usuario" className="form-label text-dark fw-bold">
-                      <i className="bi bi-person me-1"></i>
-                      Usuario
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="usuario"
-                      placeholder="Digite seu usuario"
-                      value={usuario}
-                      onChange={(e) => setUsuario(e.target.value)}
-                      required
-                      disabled={loading}
-                      style={{
-                        borderRadius: '8px',
-                        border: 'none',
-                        padding: '12px'
-                      }}
-                    />
-                  </div>
+                      {/* Campo de Usuário */}
+                      <div className="mb-3">
+                        <label htmlFor="usuario" className="form-label text-dark fw-bold">
+                          <i className="bi bi-person me-1"></i>
+                          Usuario
+                        </label>
+                        <Tooltip helpText={
+                          <>
+                            Nome de usuário cadastrado.
+                          </>
+                        }>
+                          <input
+                            type="text"
+                            className="form-control"
+                            id="usuario"
+                            placeholder="Digite seu usuario"
+                            value={usuario}
+                            onChange={(e) => setUsuario(e.target.value)}
+                            required
+                            disabled={loading}
+                            style={{
+                              borderRadius: '8px',
+                              border: 'none',
+                              padding: '12px'
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
 
-                  <div className="mb-4">
-                    <label htmlFor="senha" className="form-label text-dark fw-bold">
-                      <i className="bi bi-lock me-1"></i>
-                      Senha
-                    </label>
-                    <div className="input-group">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        className="form-control"
-                        id="senha"
-                        placeholder="Digite sua senha"
-                        value={senha}
-                        onChange={(e) => setSenha(e.target.value)}
-                        required
-                        disabled={loading}
-                        style={{
-                          borderRadius: '8px 0 0 8px',
-                          border: 'none',
-                          padding: '12px'
-                        }}
-                      />
+                      {/* Campo de Senha */}
+                      <div className="mb-4">
+                        <label htmlFor="senha" className="form-label text-dark fw-bold">
+                          <i className="bi bi-lock me-1"></i>
+                          Senha
+                        </label>
+                        <Tooltip helpText={
+                          <>
+                            Sua senha tem no mínimo 6 caracteres (letras e números).
+                          </>
+                        }>
+                          <div className="input-group">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              className="form-control"
+                              id="senha"
+                              placeholder="Digite sua senha"
+                              value={senha}
+                              onChange={(e) => setSenha(e.target.value)}
+                              required
+                              disabled={loading}
+                              style={{
+                                borderRadius: '8px 0 0 8px',
+                                border: 'none',
+                                padding: '12px'
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-outline-secondary"
+                              onClick={() => setShowPassword(!showPassword)}
+                              disabled={loading}
+                              style={{
+                                borderRadius: '0 8px 8px 0',
+                                border: 'none',
+                                backgroundColor: 'white'
+                              }}
+                            >
+                              <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                            </button>
+                          </div>
+                        </Tooltip>
+                      </div>
+
+                      {/* Botão de Login */}
                       <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() => setShowPassword(!showPassword)}
-                        disabled={loading}
+                        type="submit"
+                        className="btn w-100 text-white fw-bold"
+                        disabled={loading || !usuario || !senha}
                         style={{
-                          borderRadius: '0 8px 8px 0',
+                          backgroundColor: loading ? '#6c757d' : '#28A745',
                           border: 'none',
-                          backgroundColor: 'white'
+                          borderRadius: '8px',
+                          padding: '12px',
+                          fontSize: '16px'
                         }}
                       >
-                        <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                        {loading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                            Entrando...
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-box-arrow-in-right me-2"></i>
+                            Entrar
+                          </>
+                        )}
                       </button>
-                    </div>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn w-100 text-white fw-bold"
-                    disabled={loading || !usuario || !senha}
-                    style={{
-                      backgroundColor: loading ? '#6c757d' : '#28A745',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '12px',
-                      fontSize: '16px'
-                    }}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        Entrando...
-                      </>
-                    ) : (
-                      <>
-                        <i className="bi bi-box-arrow-in-right me-2"></i>
-                        Entrar
-                      </>
-                    )}
-                  </button>
-                </form>
-
+                    </form>
                 <div className="text-center mt-3">
                   <small className="text-dark">
                     <i className="bi bi-info-circle me-1"></i>

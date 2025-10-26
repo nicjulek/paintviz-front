@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Pintura from './pages/Pintura';
 import Galeria from './pages/Galeria';
-import Agenda from './pages/Agenda';
 import Login from './pages/Login';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -16,6 +15,7 @@ import ErroAcesso from './pages/ErroAcesso';
 import Ordem from './pages/Ordem';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute/ProtectedAdminRoute';
 import CadastroModelos from './pages/CadastroModelo';
+import { HelpProvider } from './context/HelpContext';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<UsuarioAutenticado | null>(null);
@@ -64,69 +64,70 @@ const App: React.FC = () => {
   }
 
   return (
-    !user ? (
-      <Routes>
-        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="*" element={<ErroAcesso mensagem="Faça login para acessar o sistema." />} />
-      </Routes>
-    ) : (
-      <div className="d-flex flex-column min-vh-100">
-        <Header
-          user={user ? { name: user.nome, role: user.isAdmin ? 'admin' : 'user' } : null}
-          onLogout={handleLogout}
-        />
-        <main className="flex-grow-1" style={{ padding: '24px', minHeight: 0 }}>
-          <Routes>
-            <Route path="/login" element={<Navigate to="/galeria" replace />} />
-            <Route path="/pintura" element={<Pintura />} />
-            <Route path="/galeria" element={<Galeria />} />
-            <Route
-              path="/cadastro-modelo"
-              element={
-                <ProtectedAdminRoute>
-                  <CadastroModelo />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route
-              path="/gestao-modelos"
-              element={
-                <ProtectedAdminRoute>
-                  <GestaoModelos />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route
-              path="/gestao-atendentes"
-              element={
-                <ProtectedAdminRoute>
-                  <GestaoAtendentes />
-                </ProtectedAdminRoute>
-              }
-            />
-            <Route 
-              path="/editar-modelo/:id" 
-              element={
-                <ProtectedAdminRoute>
-                  <CadastroModelos />
-                </ProtectedAdminRoute>
-            } />
-            <Route path="/agenda" element={<Agenda />} />
-            <Route
-              path="/cadastro-ordem"
-              element={
-                <ProtectedOrdemRoute>
-                  <CadastroOrdem />
-                </ProtectedOrdemRoute>
-              }
-            />
-            <Route path="/ordem/:id" element={<Ordem />} />
-            <Route path="*" element={<ErroAcesso mensagem="Página não encontrada ou acesso não autorizado." />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
-    )
+    <HelpProvider>
+      {!user ? (
+        <Routes>
+          <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="*" element={<ErroAcesso mensagem="Faça login para acessar o sistema." />} />
+        </Routes>
+      ) : (
+        <div className="d-flex flex-column min-vh-100">
+          <Header
+            user={user ? { name: user.nome, role: user.isAdmin ? 'admin' : 'user' } : null}
+            onLogout={handleLogout}
+          />
+          <main className="flex-grow-1" style={{ padding: '24px', minHeight: 0 }}>
+            <Routes>
+              <Route path="/login" element={<Navigate to="/galeria" replace />} />
+              <Route path="/pintura" element={<Pintura />} />
+              <Route path="/galeria" element={<Galeria />} />
+              <Route
+                path="/cadastro-modelo"
+                element={
+                  <ProtectedAdminRoute>
+                    <CadastroModelo />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/gestao-modelos"
+                element={
+                  <ProtectedAdminRoute>
+                    <GestaoModelos />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route
+                path="/gestao-atendentes"
+                element={
+                  <ProtectedAdminRoute>
+                    <GestaoAtendentes />
+                  </ProtectedAdminRoute>
+                }
+              />
+              <Route 
+                path="/editar-modelo/:id" 
+                element={
+                  <ProtectedAdminRoute>
+                    <CadastroModelos />
+                  </ProtectedAdminRoute>
+              } />
+              <Route
+                path="/cadastro-ordem"
+                element={
+                  <ProtectedOrdemRoute>
+                    <CadastroOrdem />
+                  </ProtectedOrdemRoute>
+                }
+              />
+              <Route path="/ordem/:id" element={<Ordem />} />
+              <Route path="*" element={<ErroAcesso mensagem="Página não encontrada ou acesso não autorizado." />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      )}
+    </HelpProvider>
   );
 };
 

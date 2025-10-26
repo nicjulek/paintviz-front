@@ -36,10 +36,6 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
         <i className="bi bi-images"></i>
         Galeria
       </Link>
-      <Link className="nav-link text-light d-flex align-items-center gap-2" to="/agenda">
-        <i className="bi bi-calendar-event"></i>
-        Agenda
-      </Link>
     </>
   );
 
