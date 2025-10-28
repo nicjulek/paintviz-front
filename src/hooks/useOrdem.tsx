@@ -21,16 +21,33 @@ const statusMap: { [key: number]: string } = {
   5: 'Cancelada'
 };
 
+// Função para formatar data para dd/mm/aaaa
+const formatarData = (dataIso: string | null): string => {
+  if (!dataIso) return "-";
+  try {
+    const data = new Date(dataIso);
+    if (isNaN(data.getTime())) return "-";
+    
+    const dia = data.getDate().toString().padStart(2, '0');
+    const mes = (data.getMonth() + 1).toString().padStart(2, '0');
+    const ano = data.getFullYear();
+    
+    return `${dia}/${mes}/${ano}`;
+  } catch {
+    return "-";
+  }
+};
+
 export const useOrdem = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [ordem, setOrdem] = useState<any>(null);
   const [cliente, setCliente] = useState<any>(null);
+  const [usuario, setUsuario] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [visualizacaoIdx, setVisualizacaoIdx] = useState(0);
   const [svg, setSvg] = useState<string | null>(null);
 
-  // Função para carregar dados da ordem e cliente
   const fetchOrdem = async () => {
     try {
       setLoading(true);
@@ -39,18 +56,33 @@ export const useOrdem = () => {
 
       let clienteId = ordemRes.data.id_cliente;
       if (clienteId) {
-        const clienteRes = await axios.get(`${API_URL}/clientes/${clienteId}`);
-        setCliente(clienteRes.data);
+        try {
+          const clienteRes = await axios.get(`${API_URL}/clientes/${clienteId}`);
+          setCliente(clienteRes.data);
+        } catch {
+          setCliente(null);
+        }
       }
+
+      let usuarioId = ordemRes.data.id_usuario_responsavel;
+      if (usuarioId) {
+        try {
+          const usuarioRes = await axios.get(`${API_URL}/usuarios/${usuarioId}`);
+          setUsuario(usuarioRes.data);
+        } catch {
+          setUsuario(null);
+        }
+      }
+
     } catch (err) {
       setOrdem(null);
       setCliente(null);
+      setUsuario(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para recarregar os dados
   const recarregarDados = async () => {
     await fetchOrdem();
   };
@@ -195,7 +227,7 @@ export const useOrdem = () => {
     doc.save(`relatorio_ordem_${ordem.id_ordem_servico}.pdf`);
   };
 
-  // Computed values
+  // Computed values com formatação de data
   let clienteInfo: any[] = [];
   if (cliente?.pessoa_fisica) {
     clienteInfo = [
@@ -227,10 +259,10 @@ export const useOrdem = () => {
   ];
 
   const statusInfo = [
-    { label: "Data de Emissão", desc: ordem?.data_emissao ? ordem.data_emissao.slice(0, 10) : "-" },
-    { label: "Data de Entrega", desc: ordem?.data_entrega ? ordem.data_entrega.slice(0, 10) : "-" },
-    { label: "Data Programada", desc: ordem?.data_programada ? ordem.data_programada.slice(0, 10) : "-" },
-    { label: "Usuário", desc: ordem?.usuario || "-", highlight: true },
+    { label: "Data de Emissão", desc: formatarData(ordem?.data_emissao) },
+    { label: "Data de Entrega", desc: formatarData(ordem?.data_entrega) },
+    { label: "Data Programada", desc: formatarData(ordem?.data_programada) },
+    { label: "Usuário Responsável", desc: usuario?.nome || "-", highlight: true },
     { label: "Status", desc: ordem?.status_nome || statusMap[ordem?.id_status] || `Status ${ordem?.id_status}` || "-", highlight: true },
     { label: "Número de Box", desc: ordem?.numero_box || "-" }
   ];

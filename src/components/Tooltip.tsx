@@ -19,10 +19,10 @@ export const Tooltip: React.FC<TooltipProps> = ({ helpText, children }) => {
 
       {isHelpModeActive && (
         <div
-          className="absolute z-50 p-1.5 bg-indigo-700 text-white text-[0.65rem] rounded-md shadow-xl pointer-events-none 
+          className="absolute z-50 p-1.5 bg-indigo-700 text-black text-[0.65rem] rounded-md shadow-xl pointer-events-none 
                      whitespace-normal max-w-xs left-1/2 transform -translate-x-1/2 bottom-full mb-1.5"
         >
-          <i className="bi bi-question-circle-fill inline-block w-3 h-3 mr-1 align-sub"></i>
+          <i className="bi bi-question-circle-fill inline-block w-3 h-3 mr-1 me-2 align-sub"></i>
           {helpText}
           <div
             className="absolute bottom-[-3px] left-1/2 transform -translate-x-1/2 w-0 h-0 

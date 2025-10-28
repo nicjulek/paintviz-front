@@ -283,4 +283,12 @@ export interface ModalCadastroAtendenteProps {
   id?: number;
 }
 
+export interface TooltipProps {
+  helpText: React.ReactNode;
+  children: React.ReactNode;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  size?: 'sm' | 'md' | 'lg';
+  theme?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
+}
+
 export {};
