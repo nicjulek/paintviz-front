@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useAvisoModal } from '../modals/AvisoModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
@@ -53,9 +54,13 @@ export function useGaleria() {
   const [modalDataEntrega, setModalDataEntrega] = useState<string>("");
   const [modalNumeroBox, setModalNumeroBox] = useState<string>("");
 
+  // Hook do AvisoModal
+  const { modalProps, mostrarSucesso, mostrarErro, fecharModal } = useAvisoModal();
+
   useEffect(() => {
     async function fetchOrdens() {
       try {
+        setLoading(true);
         const res = await axios.get(`${API_URL}/ordem-servico`);
         const ordensComCliente = await Promise.all(
           res.data.map(async (ordem: any) => {
@@ -65,9 +70,9 @@ export function useGaleria() {
             if (ordem.id_cliente) {
               try {
                 const clienteRes = await axios.get(`${API_URL}/clientes/${ordem.id_cliente}`);
-                return { ...ordem, cliente: clienteRes.data };
+                ordem.cliente = clienteRes.data;
               } catch {
-                return ordem;
+                ordem.cliente = null;
               }
             }
             return ordem;
@@ -75,13 +80,15 @@ export function useGaleria() {
         );
         setOrdens(ordensComCliente);
       } catch (err) {
+        console.error('Erro ao carregar ordens:', err);
+        mostrarErro('Erro', 'Não foi possível carregar as ordens de serviço.');
         setOrdens([]);
       } finally {
         setLoading(false);
       }
     }
     fetchOrdens();
-  }, []);
+  }, [mostrarErro]);
 
   // função para calcular data de início baseada no período selecionado
   const getDataInicioByPeriod = (periodo: string): Date | null => {
@@ -168,20 +175,26 @@ export function useGaleria() {
         if (filtroPeriodo === "custom") {
           // período personalizado
           if (dataInicio || dataFim) {
-            const dataOrdem = new Date(ordem.data_entrega || ordem.data_emissao);
-            if (dataInicio && dataOrdem < new Date(dataInicio)) {
+            const dataOrdem = new Date(dataEntrega);
+            if (isNaN(dataOrdem.getTime())) {
               passaFiltroPeriodo = false;
-            }
-            if (dataFim && dataOrdem > new Date(dataFim)) {
-              passaFiltroPeriodo = false;
+            } else {
+              if (dataInicio && dataOrdem < new Date(dataInicio)) {
+                passaFiltroPeriodo = false;
+              }
+              if (dataFim && dataOrdem > new Date(dataFim)) {
+                passaFiltroPeriodo = false;
+              }
             }
           }
         } else {
           // período predefinido
           const dataInicioCalc = getDataInicioByPeriod(filtroPeriodo);
           if (dataInicioCalc) {
-            const dataOrdem = new Date(ordem.data_entrega || ordem.data_emissao);
-            passaFiltroPeriodo = dataOrdem >= dataInicioCalc;
+            const dataOrdem = new Date(dataEntrega);
+            if (isNaN(dataOrdem.getTime()) || dataOrdem < dataInicioCalc) {
+              passaFiltroPeriodo = false;
+            }
           }
         }
       }
@@ -253,69 +266,130 @@ export function useGaleria() {
   };
 
   async function alterarStatus() {
-    if (!modalOrdemId) return;
-    setAlterando(true);
-
-    let payload: any = { id_status: modalStatusId };
-
-    const ordemAtual = ordens.find((o: any) => o.id_ordem_servico === modalOrdemId);
-    if (modalStatusId !== 1 && ordemAtual?.id_status === 1) {
-      payload.data_emissao = modalDataEmissao;
-      payload.data_programada = modalDataProgramada;
-      payload.data_entrega = modalDataEntrega;
+  if (!modalOrdemId) return;
+  
+  // Validação adicional no frontend para ordem de status
+  const ordemAtual = ordens.find((o: any) => o.id_ordem_servico === modalOrdemId);
+  const statusAtual = ordemAtual?.id_status;
+  
+  // Validar se pode alterar para o novo status
+  if (modalStatusId !== 5 && modalStatusId < statusAtual) {
+    mostrarErro('Alteração Inválida', 'Não é possível voltar para um status anterior. O progresso da ordem só pode avançar ou ser cancelado.');
+    return;
+  }
+  
+  // Validar datas não podem ser anteriores ao dia atual
+  const hoje = new Date().toISOString().split('T')[0];
+  
+  if (modalStatusId !== 1 && statusAtual === 1) {
+    if (modalDataEmissao < hoje) {
+      mostrarErro('Data Inválida', 'A data de emissão não pode ser anterior à data atual.');
+      return;
     }
-    if (modalStatusId === 3) {
-      payload.numero_box = modalNumeroBox;
+    if (modalDataProgramada < hoje) {
+      mostrarErro('Data Inválida', 'A data programada não pode ser anterior à data atual.');
+      return;
     }
-
-    try {
-      const res = await axios.patch(`${API_URL}/ordem-servico/${modalOrdemId}/status`, payload);
-      setOrdens((ordens: any[]) =>
-        ordens.map(ordem =>
-          ordem.id_ordem_servico === modalOrdemId
-            ? {
-              ...ordem,
-              id_status: modalStatusId,
-              numero_box: modalNumeroBox,
-              data_emissao: payload.data_emissao ?? ordem.data_emissao,
-              data_programada: payload.data_programada ?? ordem.data_programada,
-              data_entrega: payload.data_entrega ?? ordem.data_entrega
-            }
-            : ordem
-        )
-      );
-      setShowStatusModal(false);
-      alert(res.data.message || "Status alterado com sucesso!");
-    } catch (error: any) {
-      alert(error.response?.data?.error || "Erro ao alterar status.");
-    } finally {
-      setAlterando(false);
+    if (modalDataEntrega < hoje) {
+      mostrarErro('Data Inválida', 'A data de entrega não pode ser anterior à data atual.');
+      return;
     }
   }
+  
+  setAlterando(true);
+
+  let payload: any = { id_status: modalStatusId };
+
+  if (modalStatusId !== 1 && statusAtual === 1) {
+    payload.data_emissao = modalDataEmissao;
+    payload.data_programada = modalDataProgramada;
+    payload.data_entrega = modalDataEntrega;
+  }
+  if (modalStatusId === 3) {
+    payload.numero_box = modalNumeroBox;
+  }
+
+  try {
+    const res = await axios.patch(`${API_URL}/ordem-servico/${modalOrdemId}/status`, payload);
+    setOrdens((ordens: any[]) =>
+      ordens.map(ordem =>
+        ordem.id_ordem_servico === modalOrdemId
+          ? {
+            ...ordem,
+            id_status: modalStatusId,
+            numero_box: modalNumeroBox,
+            data_emissao: payload.data_emissao ?? ordem.data_emissao,
+            data_programada: payload.data_programada ?? ordem.data_programada,
+            data_entrega: payload.data_entrega ?? ordem.data_entrega
+          }
+          : ordem
+      )
+    );
+    setShowStatusModal(false);
+    
+    mostrarSucesso('Sucesso', res.data.message || 'Status alterado com sucesso!');
+    
+    setTimeout(() => {
+      fecharModal();
+    }, 2000);
+    
+  } catch (error: any) {
+    console.error('Erro ao alterar status:', error);
+    
+    // Verificar se o erro é relacionado à ordem de status
+    if (error.response?.data?.error?.includes('status') || error.response?.data?.error?.includes('anterior')) {
+      mostrarErro('Alteração Inválida', error.response.data.error);
+    } else {
+      mostrarErro('Erro', error.response?.data?.error || 'Erro ao alterar status.');
+    }
+  } finally {
+    setAlterando(false);
+  }
+}
 
   async function alterarPrioridade() {
-    if (!modalOrdemId) return;
-    setAlterando(true);
-
-    try {
-      const res = await axios.patch(`${API_URL}/ordem-servico/${modalOrdemId}/prioridade`, {
-        data_entrega: modalDataEntrega
-      });
-      setOrdens((ordens: any[]) =>
-        ordens.map(ordem =>
-          ordem.id_ordem_servico === modalOrdemId
-            ? { ...ordem, data_entrega: res.data.ordem?.data_entrega ?? modalDataEntrega }
-            : ordem
-        )
-      );
-      setShowPrioriModal(false);
-      alert(res.data.message || "Prioridade/Data de entrega alterada!");
-    } catch (error: any) {
-      alert(error.response?.data?.error || "Erro ao alterar prioridade.");
-    } finally {
-      setAlterando(false);
-    }
+  if (!modalOrdemId) return;
+  
+  const data = new Date().toISOString().split('T')[0];
+  if (modalDataEntrega < data) {
+    mostrarErro('Data Inválida', 'A data de entrega não pode ser anterior à data atual.');
+    return;
   }
+  
+  setAlterando(true);
+
+  try {
+    const res = await axios.patch(`${API_URL}/ordem-servico/${modalOrdemId}/prioridade`, {
+      data_entrega: modalDataEntrega
+    });
+    setOrdens((ordens: any[]) =>
+      ordens.map(ordem =>
+        ordem.id_ordem_servico === modalOrdemId
+          ? { ...ordem, data_entrega: res.data.ordem?.data_entrega ?? modalDataEntrega }
+          : ordem
+      )
+    );
+    setShowPrioriModal(false);
+    
+    mostrarSucesso('Sucesso', res.data.message || 'Prioridade/Data de entrega alterada!');
+    
+    setTimeout(() => {
+      fecharModal();
+    }, 2000);
+    
+  } catch (error: any) {
+    console.error('Erro ao alterar prioridade:', error);
+    
+    // Verificar se o erro é relacionado à data inválida
+    if (error.response?.data?.error?.includes('data') || error.response?.data?.error?.includes('anterior')) {
+      mostrarErro('Data Inválida', error.response.data.error);
+    } else {
+      mostrarErro('Erro', error.response?.data?.error || 'Erro ao alterar prioridade.');
+    }
+  } finally {
+    setAlterando(false);
+  }
+}
 
   // função para limpar filtros
   const limparFiltros = () => {
@@ -371,6 +445,8 @@ export function useGaleria() {
     openPrioriModal,
     alterarStatus,
     alterarPrioridade,
-    getStatusNome
+    getStatusNome,
+    // Expor props do modal
+    modalProps
   };
 }

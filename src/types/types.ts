@@ -291,4 +291,23 @@ export interface TooltipProps {
   theme?: 'default' | 'primary' | 'success' | 'warning' | 'danger';
 }
 
+export interface AvisoModalProps {
+  show: boolean;
+  onClose: () => void;
+  onConfirm?: () => void;
+  onRetry?: () => void;
+  titulo?: string;
+  mensagem?: string;
+  textoConfirmar?: string;
+  textoFechar?: string;
+  textoRetry?: string;
+  mostrarFechar?: boolean;
+  mostrarConfirmar?: boolean;
+  mostrarRetry?: boolean;
+  loading?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
+  tipo?: 'erro' | 'sucesso' | 'confirmacao' | 'conexao' | 'generico';
+}
+
 export {};

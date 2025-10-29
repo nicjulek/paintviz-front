@@ -3,6 +3,7 @@ import * as fabric from "fabric";
 import { Canvas, loadSVGFromString, util, Group, FabricObject } from "fabric";
 import axios from "axios";
 import { Carroceria, Peca, UsuarioAutenticado, Cor, Paleta } from "../types/types";
+import { useAvisoModal } from "../modals/AvisoModal";
 
 export function usePintura(navigate?: (path: string) => void) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -22,6 +23,7 @@ export function usePintura(navigate?: (path: string) => void) {
     const [error, setError] = useState<string>('');
     const [corSelecionada, setCorSelecionada] = useState<string>('#000000');
     const [menuAberto, setMenuAberto] = useState(true);
+    const { modalProps, mostrarModal, mostrarSucesso, fecharModal } = useAvisoModal();
 
     const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
@@ -36,6 +38,9 @@ export function usePintura(navigate?: (path: string) => void) {
     };
 
     useEffect(() => {
+        // Limpar qualquer pintura temporária ao entrar na tela de pintura
+        limparPinturaTemporariaAoEntrar();
+        
         // Restaurar pintura anterior do localStorage ao entrar na tela de pintura
         const storedCores = localStorage.getItem("coresAplicadas");
         const storedCarroceria = localStorage.getItem("carroceriaSelecionada");
@@ -50,8 +55,38 @@ export function usePintura(navigate?: (path: string) => void) {
             setUser(JSON.parse(storedUser));
         }
         carregarDados();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    // Limpar pintura temporária ao entrar na tela (sem aviso)
+    const limparPinturaTemporariaAoEntrar = async () => {
+        try {
+            const pinturaTemporariaId = localStorage.getItem('pintura_temporaria_id');
+            const pinturaStatus = localStorage.getItem('pintura_status');
+            
+            if (pinturaTemporariaId && pinturaStatus === 'temporaria') {
+                console.log('Limpando pintura temporária anterior:', pinturaTemporariaId);
+                
+                // Tentar excluir do banco
+                try {
+                    await axios.delete(`${API_URL}/pinturas/${pinturaTemporariaId}`, getAuthHeaders());
+                    console.log('Pintura temporária anterior excluída:', pinturaTemporariaId);
+                } catch (error) {
+                    console.warn('Erro ao excluir pintura temporária:', error);
+                }
+                
+                // Limpar localStorage sempre
+                localStorage.removeItem('id_pintura');
+                localStorage.removeItem('pintura_temporaria_id');
+                localStorage.removeItem('pintura_criada_em');
+                localStorage.removeItem('pintura_status');
+                localStorage.removeItem('coresAplicadas');
+                localStorage.removeItem('carroceriaSelecionada');
+                localStorage.removeItem('tipoVisualizacao');
+            }
+        } catch (error) {
+            console.warn('Erro ao limpar pintura temporária:', error);
+        }
+    };
 
     useEffect(() => {
         function resizeCanvas() {
@@ -78,7 +113,7 @@ export function usePintura(navigate?: (path: string) => void) {
                 if (group) {
                     // Para traseira, não force o zoom!
                     if (tipoVisualizacao === 'traseira') {
-                        group.scaleToWidth(canvasWidth * 0.5); // Use 0.6 ou ajuste para menos zoom
+                        group.scaleToWidth(canvasWidth * 0.5);
                     } else {
                         group.scaleToWidth(canvasWidth * 0.9);
                     }
@@ -119,7 +154,6 @@ export function usePintura(navigate?: (path: string) => void) {
                 fabricCanvasRef.current = null;
             }
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -156,7 +190,6 @@ export function usePintura(navigate?: (path: string) => void) {
         if (carroceriaSelecionada && fabricCanvasRef.current) {
             carregarSvgNoCanvas();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [carroceriaSelecionada, tipoVisualizacao, coresAplicadas]);
 
     const carregarDados = async () => {
@@ -274,7 +307,6 @@ export function usePintura(navigate?: (path: string) => void) {
                     : undefined;
 
                 if (peca) {
-                    // Use o id_svg da peça para buscar a cor
                     if (coresAplicadas[peca.id_svg]) {
                         obj.set('fill', coresAplicadas[peca.id_svg]);
                     }
@@ -330,7 +362,6 @@ export function usePintura(navigate?: (path: string) => void) {
         const group = canvas.getObjects().find(obj => obj.type === 'group') as Group;
         if (group) {
             const items = group.getObjects();
-            // Agora procura se o id_svg da peça está contido no id do objeto SVG
             const targetObject = items.find((obj: any) =>
                 obj.data?.id && obj.data.id.toString().includes(pecaSelecionada)
             );
@@ -355,22 +386,44 @@ export function usePintura(navigate?: (path: string) => void) {
 
     const handleSalvar = async () => {
         if (!carroceriaSelecionada || !user?.id) {
-            setError('Carroceria ou usuário não selecionado corretamente.');
+            mostrarModal({
+                titulo: 'Erro',
+                mensagem: 'Carroceria ou usuário não selecionado corretamente.',
+                mostrarFechar: true,
+                mostrarConfirmar: false
+            });
             return;
         }
 
         try {
             setLoading(true);
 
+            const pinturaTemporariaId = localStorage.getItem('pintura_temporaria_id');
+            if (pinturaTemporariaId && pinturaTemporariaId !== 'null') {
+                try {
+                    await axios.delete(`${API_URL}/pinturas/${pinturaTemporariaId}`, getAuthHeaders());
+                    console.log('Pintura temporária anterior removida:', pinturaTemporariaId);
+                } catch (error) {
+                    console.warn('Erro ao remover pintura temporária anterior:', error);
+                }
+            }
+
             let pintura_svg_lateral = carroceriaSelecionada.lateral_svg;
             let pintura_svg_traseira = carroceriaSelecionada.traseira_svg;
             let pintura_svg_diagonal = carroceriaSelecionada.diagonal_svg;
 
-            // Função para renderizar e exportar SVG de cada visualização
             const exportSVG = async (tipo: 'lateral' | 'traseira' | 'diagonal') => {
+                const tipoOriginal = tipoVisualizacao;
                 setTipoVisualizacao(tipo);
-                await new Promise(resolve => setTimeout(resolve, 100)); // Aguarda o canvas atualizar
-                return fabricCanvasRef.current ? fabricCanvasRef.current.toSVG() : '';
+                
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                if (fabricCanvasRef.current) {
+                    const svgData = fabricCanvasRef.current.toSVG();
+                    setTipoVisualizacao(tipoOriginal);
+                    return svgData;
+                }
+                return '';
             };
 
             pintura_svg_lateral = await exportSVG('lateral');
@@ -385,13 +438,28 @@ export function usePintura(navigate?: (path: string) => void) {
                 id_usuario: user.id
             }, getAuthHeaders());
 
-            localStorage.setItem('id_pintura', response.data.id_pintura);
+            const pinturaId = response.data.id_pintura;
 
-            alert('Pintura salva com sucesso!');
-            if (navigate) navigate('/cadastro-ordem');
+            localStorage.setItem('id_pintura', pinturaId);
+            localStorage.setItem('pintura_temporaria_id', pinturaId);
+            localStorage.setItem('pintura_criada_em', new Date().toISOString());
+            localStorage.setItem('pintura_status', 'temporaria');
+
+            mostrarSucesso('Sucesso', 'Pintura salva com sucesso!');
+            
+            setTimeout(() => {
+                fecharModal();
+                if (navigate) navigate('/cadastro-ordem');
+            }, 2000);
 
         } catch (error: any) {
-            setError('Erro ao salvar pintura.');
+            mostrarModal({
+                titulo: 'Erro',
+                mensagem: 'Erro ao salvar pintura. Tente novamente.',
+                mostrarRetry: true,
+                mostrarFechar: true,
+                onRetry: handleSalvar
+            });
         } finally {
             setLoading(false);
         }
@@ -587,6 +655,7 @@ export function usePintura(navigate?: (path: string) => void) {
         renderTipoVisualizacao,
         renderPaletaCores,
         renderListaPecas,
-        handleColorChange
+        handleColorChange,
+        modalProps
     }
 }

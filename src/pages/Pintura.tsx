@@ -5,8 +5,9 @@ import '../App.css';
 import SidebarMenu from "../components/SidebarMenu/SidebarMenu";
 import CanvasArea from "../components/CanvasArea/CanvasArea";
 import { usePintura } from "../hooks/usePintura";
+import AvisoModal from "../modals/AvisoModal";
 import axios from "axios";
-import { Tooltip } from "../components/Tooltip"; // seu componente de tooltip
+import { Tooltip } from "../components/Tooltip";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -42,7 +43,8 @@ const Pintura: React.FC = () => {
     renderTipoVisualizacao,
     renderPaletaCores,
     renderListaPecas,
-    handleColorChange
+    handleColorChange,
+    modalProps
   } = usePintura(navigate);
 
   useEffect(() => {
@@ -107,6 +109,9 @@ const Pintura: React.FC = () => {
         />
 
       </div>
+
+      {/* Modal de Aviso */}
+      <AvisoModal {...modalProps} />
     </div>
   );
 };

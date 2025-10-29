@@ -299,46 +299,51 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                 )}
                             </div>
                         </div>
-                        <div className="d-grid gap-2 mt-4">
-                            <Tooltip helpText="Salvar trabalho de pintura atual.">
-                                <button
-                                    className="btn btn-success border-0 shadow-sm d-flex align-items-center justify-content-center"
-                                    onClick={handleSalvar}
-                                    disabled={loading}
-                                    style={{
-                                        background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
-                                        border: "none",
-                                        borderRadius: "8px",
-                                        fontWeight: "600",
-                                        padding: "10px 20px",
-                                        boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
-                                    }}
-                                >
-                                    <i className="bi bi-check-circle me-2"></i>
-                                    {loading ? (
-                                        <>
-                                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                            Salvando...
-                                        </>
-                                    ) : "Salvar Pintura"}
-                                </button>
-                            </Tooltip>
-                            <Tooltip helpText="Descartar alterações de cor.">
-                                <button
-                                    className="btn btn-danger border-0 shadow-sm d-flex align-items-center justify-content-center"
-                                    onClick={handleDescartar}
-                                    disabled={loading || Object.keys(coresAplicadas).length === 0}
-                                    style={{
-                                        border: "none",
-                                        borderRadius: "8px",
-                                        fontWeight: "600",
-                                        padding: "10px 20px"
-                                    }}
-                                >
-                                    <i className="bi bi-x-circle me-2"></i>
-                                    Descartar Alterações
-                                </button>
-                            </Tooltip>
+                                                <div className="d-flex gap-2 mt-4">
+                            <div style={{ flex: 1 }}>
+                                <Tooltip helpText="Salvar trabalho de pintura atual.">
+                                    <button
+                                        className="btn btn-success border-0 shadow-sm d-flex align-items-center justify-content-center w-100"
+                                        onClick={handleSalvar}
+                                        disabled={loading}
+                                        style={{
+                                            background: loading ? "#6c757d" : "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)",
+                                            border: "none",
+                                            borderRadius: "8px",
+                                            fontWeight: "600",
+                                            padding: "10px 20px",
+                                            boxShadow: "0 4px 15px rgba(40,167,69,0.3)"
+                                        }}
+                                    >
+                                        <i className="bi bi-check-circle"></i>
+                                        {loading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+                                                <span className="ms-2">Salvando...</span>
+                                            </>
+                                        ) : <span className="ms-2">Salvar Pintura</span>}
+                                    </button>
+                                </Tooltip>
+                            </div>
+                            
+                            <div style={{ flex: 1 }}>
+                                <Tooltip helpText="Descartar alterações de cor.">
+                                    <button
+                                        className="btn btn-danger border-0 shadow-sm d-flex align-items-center justify-content-center w-100"
+                                        onClick={handleDescartar}
+                                        disabled={loading || Object.keys(coresAplicadas).length === 0}
+                                        style={{
+                                            border: "none",
+                                            borderRadius: "8px",
+                                            fontWeight: "600",
+                                            padding: "10px 20px"
+                                        }}
+                                    >
+                                        <i className="bi bi-x-circle"></i>
+                                        <span className="ms-2">Descartar</span>
+                                    </button>
+                                </Tooltip>
+                            </div>
                         </div>
                     </div>
                 )}

@@ -31,7 +31,7 @@ const FormularioCliente: React.FC<FormularioClienteProps> = ({
 
   return (
     <div className="modal d-block" tabIndex={-1} style={{ background: "rgba(0,0,0,0.3)" }}>
-      <div className="modal-dialog modal-lg modal-dialog-centered">
+      <div className="modal-dialog modal-lg">
         <div
           className="modal-content"
           style={{

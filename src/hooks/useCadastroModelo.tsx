@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { Peca, Carroceria } from '../types/types';
+import { useAvisoModal } from '../modals/AvisoModal';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3333';
 
@@ -16,6 +17,9 @@ export const useCadastroModelo = () => {
   ]);
   const [loading, setLoading] = useState(false);
   const [carregandoDados, setCarregandoDados] = useState(false);
+
+  // Hook do AvisoModal
+  const { modalProps, mostrarModal, mostrarSucesso, mostrarErro, fecharModal } = useAvisoModal();
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -54,11 +58,11 @@ export const useCadastroModelo = () => {
       
     } catch (error) {
       console.error('Erro ao carregar dados do modelo:', error);
-      alert('Erro ao carregar dados do modelo.');
+      mostrarErro('Erro', 'Erro ao carregar dados do modelo.');
     } finally {
       setCarregandoDados(false);
     }
-  }, [id]);
+  }, [id, mostrarErro]);
 
   useEffect(() => {
     if (id) {
@@ -99,18 +103,36 @@ export const useCadastroModelo = () => {
 
   const validateForm = (): boolean => {
     if (!nomeModelo.trim()) {
-      alert('Nome do modelo é obrigatório.');
+      mostrarModal({
+        titulo: 'Campo Obrigatório',
+        mensagem: 'Nome do modelo é obrigatório.',
+        mostrarFechar: true,
+        mostrarConfirmar: false,
+        tipo: 'erro'
+      });
       return false;
     }
 
     // Se está criando (não editando), SVGs são obrigatórios
     if (!isEdicao && (!lateralSVG || !traseiraSVG || !diagonalSVG)) {
-      alert('Todos os arquivos SVG são obrigatórios para cadastro.');
+      mostrarModal({
+        titulo: 'Campos Obrigatórios',
+        mensagem: 'Todos os arquivos SVG são obrigatórios para cadastro.',
+        mostrarFechar: true,
+        mostrarConfirmar: false,
+        tipo: 'erro'
+      });
       return false;
     }
 
     if (pecas.length === 0 || pecas.some(p => !p.nome_peca.trim() || !p.id_svg.trim())) {
-      alert('Preencha todos os campos das peças.');
+      mostrarModal({
+        titulo: 'Campos Obrigatórios',
+        mensagem: 'Preencha todos os campos das peças.',
+        mostrarFechar: true,
+        mostrarConfirmar: false,
+        tipo: 'erro'
+      });
       return false;
     }
 
@@ -199,15 +221,21 @@ export const useCadastroModelo = () => {
         );
       }
 
-      alert(isEdicao ? 'Modelo atualizado com sucesso!' : 'Modelo de carroceria e peças salvos com sucesso!');
-      navigate('/gestao-modelos');
+      mostrarSucesso('Sucesso', isEdicao ? 'Modelo atualizado com sucesso!' : 'Modelo de carroceria e peças salvos com sucesso!');
+      
+      setTimeout(() => {
+        fecharModal();
+        navigate('/gestao-modelos');
+      }, 2000);
+      
     } catch (error: any) {
+      console.error('Erro ao salvar modelo:', error);
+      
       if (error.response?.data?.error) {
-        alert(error.response.data.error);
+        mostrarErro('Erro', error.response.data.error);
       } else {
-        alert('Erro ao salvar modelo. Verifique os campos.');
+        mostrarErro('Erro', 'Erro ao salvar modelo. Verifique os campos.');
       }
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -231,6 +259,7 @@ export const useCadastroModelo = () => {
     handleVoltar,
     handlePecaChange,
     handleDescartarPeca,
-    handleSalvar
+    handleSalvar,
+    modalProps
   };
 };

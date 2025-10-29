@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from "jspdf";
@@ -48,7 +48,8 @@ export const useOrdem = () => {
   const [visualizacaoIdx, setVisualizacaoIdx] = useState(0);
   const [svg, setSvg] = useState<string | null>(null);
 
-  const fetchOrdem = async () => {
+  // CORRIGIDO: Usar useCallback para evitar dependência no useEffect
+  const fetchOrdem = useCallback(async () => {
     try {
       setLoading(true);
       const ordemRes = await axios.get(`${API_URL}/ordem-servico/${id}`);
@@ -81,15 +82,16 @@ export const useOrdem = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   const recarregarDados = async () => {
     await fetchOrdem();
   };
 
+  // CORRIGIDO: Adicionar fetchOrdem como dependência
   useEffect(() => {
     fetchOrdem();
-  }, [id]);
+  }, [fetchOrdem]);
 
   useEffect(() => {
     async function fetchSvg() {
