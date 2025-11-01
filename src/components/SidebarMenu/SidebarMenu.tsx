@@ -92,6 +92,47 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                 </div>
                 {menuAberto && (
                     <div className="card-body px-3 py-4" style={{ background: "transparent" }}>
+                        {/* Opções de Carrocerias */}
+                        <div className="mb-3">
+                            <Tooltip helpText="Escolha modelo e ângulo de visualização.">
+                                <button
+                                    className={`btn w-100 mb-2 text-start border-0 shadow-sm d-flex align-items-center justify-content-between ${carroceriaOpen ? "bg-paintviz-brown text-light" : "bg-paintviz-light text-paintviz-brown"}`}
+                                    type="button"
+                                    onClick={() => setCarroceriaOpen(!carroceriaOpen)}
+                                    aria-expanded={carroceriaOpen}
+                                    style={{
+                                        fontWeight: 'bold',
+                                        fontSize: '1.08rem',
+                                        borderRadius: '0.7rem',
+                                        transition: 'background 0.3s, color 0.3s'
+                                    }}
+                                >
+                                    <span><i className="bi bi-truck me-2"></i>Opções de Carroceria</span>
+                                    <span style={{ transition: 'transform 0.3s' }}>
+                                        {carroceriaOpen ? <span style={{ transform: 'rotate(180deg)', display: 'inline-block' }}>▲</span> : "▼"}
+                                    </span>
+                                </button>
+                            </Tooltip>
+                            <div
+                                style={{
+                                    maxHeight: carroceriaOpen ? 500 : 0,
+                                    overflow: 'hidden',
+                                    transition: 'max-height 0.4s cubic-bezier(.4,0,.2,1)'
+                                }}
+                            >
+                                {carroceriaOpen && (
+                                    <div className="mb-4 pb-2 fade-in" >
+                                        <Tooltip helpText="Selecione o modelo de carroceria.">
+                                            {renderCarroceriaSelector()}
+                                        </Tooltip>
+                                        <Tooltip helpText="Altere o ângulo de visualização.">
+                                            {renderTipoVisualizacao()}
+                                        </Tooltip>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        
                         {/* Paleta & Peças */}
                         <div className="mb-3">
                             <Tooltip helpText="Gerencie paletas e selecione peças para pintar.">
@@ -159,7 +200,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                     </button>
                                                 </Tooltip>
                                             </div>
-                                            <div className="mb-2 position-relative">
+                                            <div className="mb-2">
                                                 <Tooltip helpText="Escolha uma paleta existente.">
                                                     <select
                                                         className="form-select form-select-sm w-100"
@@ -169,10 +210,7 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                             borderRadius: '0.5rem',
                                                             boxShadow: '0 1px 4px #c4ae7822',
                                                             minWidth: 0,
-                                                            flex: 1,
-                                                            paddingRight: '2.5rem',
-                                                            appearance: 'none',
-                                                            backgroundImage: 'none'
+                                                            flex: 1
                                                         }}
                                                         value={paletaSelecionada ?? ""}
                                                         onChange={e => handleEscolherPaleta(Number(e.target.value))}
@@ -185,18 +223,6 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                                         ))}
                                                     </select>
                                                 </Tooltip>
-                                                <div
-                                                    className="position-absolute top-50 translate-middle-y"
-                                                    style={{
-                                                        right: '12px',
-                                                        pointerEvents: 'none',
-                                                        color: '#6c757d',
-                                                        fontSize: '0.9rem',
-                                                        zIndex: 10
-                                                    }}
-                                                >
-                                                    <i className="bi bi-chevron-down"></i>
-                                                </div>
                                             </div>
                                         </div>
                                         <PaletaModal
@@ -259,47 +285,8 @@ const SidebarMenu: React.FC<SidebarMenuProps> = ({
                                 </div>
                             )}
                         </div>
-                        {/* Opções de Carrocerias */}
-                        <div className="mb-3">
-                            <Tooltip helpText="Escolha modelo e ângulo de visualização.">
-                                <button
-                                    className={`btn w-100 mb-2 text-start border-0 shadow-sm d-flex align-items-center justify-content-between ${carroceriaOpen ? "bg-paintviz-brown text-light" : "bg-paintviz-light text-paintviz-brown"}`}
-                                    type="button"
-                                    onClick={() => setCarroceriaOpen(!carroceriaOpen)}
-                                    aria-expanded={carroceriaOpen}
-                                    style={{
-                                        fontWeight: 'bold',
-                                        fontSize: '1.08rem',
-                                        borderRadius: '0.7rem',
-                                        transition: 'background 0.3s, color 0.3s'
-                                    }}
-                                >
-                                    <span><i className="bi bi-truck me-2"></i>Opções de Carroceria</span>
-                                    <span style={{ transition: 'transform 0.3s' }}>
-                                        {carroceriaOpen ? <span style={{ transform: 'rotate(180deg)', display: 'inline-block' }}>▲</span> : "▼"}
-                                    </span>
-                                </button>
-                            </Tooltip>
-                            <div
-                                style={{
-                                    maxHeight: carroceriaOpen ? 500 : 0,
-                                    overflow: 'hidden',
-                                    transition: 'max-height 0.4s cubic-bezier(.4,0,.2,1)'
-                                }}
-                            >
-                                {carroceriaOpen && (
-                                    <div className="mb-4 pb-2 fade-in" >
-                                        <Tooltip helpText="Selecione o modelo de carroceria.">
-                                            {renderCarroceriaSelector()}
-                                        </Tooltip>
-                                        <Tooltip helpText="Altere o ângulo de visualização.">
-                                            {renderTipoVisualizacao()}
-                                        </Tooltip>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                                                <div className="d-flex gap-2 mt-4">
+                        
+                        <div className="d-flex gap-2 mt-4">
                             <div style={{ flex: 1 }}>
                                 <Tooltip helpText="Salvar trabalho de pintura atual.">
                                     <button

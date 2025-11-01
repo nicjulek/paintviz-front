@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import * as fabric from "fabric";
 import { Canvas, loadSVGFromString, util, Group, FabricObject } from "fabric";
 import axios from "axios";
@@ -37,28 +37,8 @@ export function usePintura(navigate?: (path: string) => void) {
         };
     };
 
-    useEffect(() => {
-        // Limpar qualquer pintura temporária ao entrar na tela de pintura
-        limparPinturaTemporariaAoEntrar();
-        
-        // Restaurar pintura anterior do localStorage ao entrar na tela de pintura
-        const storedCores = localStorage.getItem("coresAplicadas");
-        const storedCarroceria = localStorage.getItem("carroceriaSelecionada");
-        const storedTipoVisualizacao = localStorage.getItem("tipoVisualizacao");
-
-        if (storedCores) setCoresAplicadas(JSON.parse(storedCores));
-        if (storedCarroceria) setCarroceriaSelecionada(JSON.parse(storedCarroceria));
-        if (storedTipoVisualizacao) setTipoVisualizacao(storedTipoVisualizacao as 'lateral' | 'traseira' | 'diagonal');
-
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
-        carregarDados();
-    }, []);
-
     // Limpar pintura temporária ao entrar na tela (sem aviso)
-    const limparPinturaTemporariaAoEntrar = async () => {
+    const limparPinturaTemporariaAoEntrar = useCallback(async () => {
         try {
             const pinturaTemporariaId = localStorage.getItem('pintura_temporaria_id');
             const pinturaStatus = localStorage.getItem('pintura_status');
@@ -86,7 +66,190 @@ export function usePintura(navigate?: (path: string) => void) {
         } catch (error) {
             console.warn('Erro ao limpar pintura temporária:', error);
         }
-    };
+    }, [API_URL]);
+
+    const selecionarCarroceria = useCallback(async (carroceria: Carroceria) => {
+        try {
+            setLoading(true);
+            setError('');
+            setCarroceriaSelecionada(carroceria);
+
+            const response = await axios.get(
+                `${API_URL}/carrocerias/${carroceria.id_carroceria}/pecas`,
+                getAuthHeaders()
+            );
+
+            const pecasData: Peca[] = response.data;
+            setPecas(pecasData);
+
+            const coresIniciais: { [key: string]: string } = {};
+            pecasData.forEach(peca => {
+                if (peca.id_svg && peca.cor_atual) {
+                    coresIniciais[peca.id_svg] = peca.cor_atual;
+                }
+            });
+
+            setCoresAplicadas(coresIniciais);
+            setPecaSelecionada(null);
+
+        } catch (error: any) {
+            setError('Erro ao carregar peças da carroceria.');
+        } finally {
+            setLoading(false);
+        }
+    }, [API_URL]);
+
+    const selecionarPaleta = useCallback(async (id_paleta: number) => {
+        try {
+            setPaletaSelecionada(id_paleta);
+
+            const response = await axios.get(
+                `${API_URL}/paletas/${id_paleta}/cores`,
+                getAuthHeaders()
+            );
+
+            const coresData: Cor[] = response.data;
+            setCores(coresData);
+
+        } catch (error: any) {
+            setError('Erro ao carregar cores da paleta.');
+        }
+    }, [API_URL]);
+
+    const carregarDados = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError('');
+
+            const [carroceriasRes, paletasRes] = await Promise.all([
+                axios.get(`${API_URL}/carrocerias`, getAuthHeaders()),
+                axios.get(`${API_URL}/paletas`, getAuthHeaders())
+            ]);
+
+            const carroceriasData: Carroceria[] = carroceriasRes.data;
+            const paletasData: Paleta[] = paletasRes.data;
+
+            setCarrocerias(carroceriasData);
+            setPaletas(paletasData);
+
+            if (carroceriasData.length > 0) {
+                await selecionarCarroceria(carroceriasData[0]);
+            }
+
+            if (paletasData.length > 0 && paletasData[0].id_paleta) {
+                await selecionarPaleta(paletasData[0].id_paleta);
+            }
+
+        } catch (error: any) {
+            setError('Erro ao carregar dados do servidor.');
+        } finally {
+            setLoading(false);
+        }
+    }, [API_URL, selecionarCarroceria, selecionarPaleta]);
+
+    const carregarSvgNoCanvas = useCallback(async () => {
+        if (!carroceriaSelecionada || !fabricCanvasRef.current) return;
+        const canvas = fabricCanvasRef.current;
+
+        try {
+            let svgString = '';
+            switch (tipoVisualizacao) {
+                case 'lateral':
+                    svgString = carroceriaSelecionada.lateral_svg || '';
+                    break;
+                case 'traseira':
+                    svgString = carroceriaSelecionada.traseira_svg || '';
+                    break;
+                case 'diagonal':
+                    svgString = carroceriaSelecionada.diagonal_svg || '';
+                    break;
+            }
+
+            if (!svgString) {
+                canvas.clear();
+                return;
+            }
+
+            canvas.clear();
+
+            const { objects, options } = await loadSVGFromString(svgString);
+            const validObjects = objects.filter((obj): obj is FabricObject => obj !== null);
+
+            validObjects.forEach((obj: FabricObject) => {
+                const objId = (obj as any).id;
+                // Procura a peça cujo id_svg está contido no objId
+                const peca = objId
+                    ? pecas.find(p => p.id_svg && objId.toString().includes(p.id_svg.toString()))
+                    : undefined;
+
+                if (peca) {
+                    if (coresAplicadas[peca.id_svg]) {
+                        obj.set('fill', coresAplicadas[peca.id_svg]);
+                    }
+                    (obj as any).data = { id: peca.id_svg };
+                    obj.selectable = true;
+                    obj.hoverCursor = 'pointer';
+                    obj.lockMovementX = true;
+                    obj.lockMovementY = true;
+                    obj.lockScalingX = true;
+                    obj.lockScalingY = true;
+                    obj.lockRotation = true;
+                    obj.hasControls = false;
+                    obj.hasBorders = false;
+                    obj.evented = true;
+                } else {
+                    obj.selectable = false;
+                    obj.evented = false;
+                }
+            });
+
+            const group = util.groupSVGElements(validObjects, options);
+
+            if (tipoVisualizacao === 'traseira') {
+                group.scaleToWidth(canvas.getWidth() * 0.4);
+            } else {
+                group.scaleToWidth(canvas.getWidth() * 0.9);
+            }
+
+            canvas.centerObject(group);
+            group.selectable = false;
+            group.evented = false;
+            canvas.add(group);
+
+            canvas.renderAll();
+
+            if (pecaSelecionada) {
+                const items = (group as Group).getObjects();
+                const novaPeca = items.find((obj: any) => obj.data?.id === pecaSelecionada);
+                if (novaPeca) {
+                    canvas.discardActiveObject();
+                    canvas.renderAll();
+                }
+            }
+        } catch (error) {
+            setError('Erro ao carregar visualização da carroceria.');
+        }
+    }, [carroceriaSelecionada, tipoVisualizacao, coresAplicadas, pecas, pecaSelecionada]);
+
+    useEffect(() => {
+        // Limpar qualquer pintura temporária ao entrar na tela de pintura
+        limparPinturaTemporariaAoEntrar();
+        
+        // Restaurar pintura anterior do localStorage ao entrar na tela de pintura
+        const storedCores = localStorage.getItem("coresAplicadas");
+        const storedCarroceria = localStorage.getItem("carroceriaSelecionada");
+        const storedTipoVisualizacao = localStorage.getItem("tipoVisualizacao");
+
+        if (storedCores) setCoresAplicadas(JSON.parse(storedCores));
+        if (storedCarroceria) setCarroceriaSelecionada(JSON.parse(storedCarroceria));
+        if (storedTipoVisualizacao) setTipoVisualizacao(storedTipoVisualizacao as 'lateral' | 'traseira' | 'diagonal');
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+        carregarDados();
+    }, [carregarDados, limparPinturaTemporariaAoEntrar]);
 
     useEffect(() => {
         function resizeCanvas() {
@@ -190,170 +353,7 @@ export function usePintura(navigate?: (path: string) => void) {
         if (carroceriaSelecionada && fabricCanvasRef.current) {
             carregarSvgNoCanvas();
         }
-    }, [carroceriaSelecionada, tipoVisualizacao, coresAplicadas]);
-
-    const carregarDados = async () => {
-        try {
-            setLoading(true);
-            setError('');
-
-            const [carroceriasRes, paletasRes] = await Promise.all([
-                axios.get(`${API_URL}/carrocerias`, getAuthHeaders()),
-                axios.get(`${API_URL}/paletas`, getAuthHeaders())
-            ]);
-
-            const carroceriasData: Carroceria[] = carroceriasRes.data;
-            const paletasData: Paleta[] = paletasRes.data;
-
-            setCarrocerias(carroceriasData);
-            setPaletas(paletasData);
-
-            if (carroceriasData.length > 0) {
-                await selecionarCarroceria(carroceriasData[0]);
-            }
-
-            if (paletasData.length > 0 && paletasData[0].id_paleta) {
-                await selecionarPaleta(paletasData[0].id_paleta);
-            }
-
-        } catch (error: any) {
-            setError('Erro ao carregar dados do servidor.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const selecionarCarroceria = async (carroceria: Carroceria) => {
-        try {
-            setLoading(true);
-            setError('');
-            setCarroceriaSelecionada(carroceria);
-
-            const response = await axios.get(
-                `${API_URL}/carrocerias/${carroceria.id_carroceria}/pecas`,
-                getAuthHeaders()
-            );
-
-            const pecasData: Peca[] = response.data;
-            setPecas(pecasData);
-
-            const coresIniciais: { [key: string]: string } = {};
-            pecasData.forEach(peca => {
-                if (peca.id_svg && peca.cor_atual) {
-                    coresIniciais[peca.id_svg] = peca.cor_atual;
-                }
-            });
-
-            setCoresAplicadas(coresIniciais);
-            setPecaSelecionada(null);
-
-        } catch (error: any) {
-            setError('Erro ao carregar peças da carroceria.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const selecionarPaleta = async (id_paleta: number) => {
-        try {
-            setPaletaSelecionada(id_paleta);
-
-            const response = await axios.get(
-                `${API_URL}/paletas/${id_paleta}/cores`,
-                getAuthHeaders()
-            );
-
-            const coresData: Cor[] = response.data;
-            setCores(coresData);
-
-        } catch (error: any) {
-            setError('Erro ao carregar cores da paleta.');
-        }
-    };
-
-    const carregarSvgNoCanvas = async () => {
-        if (!carroceriaSelecionada || !fabricCanvasRef.current) return;
-        const canvas = fabricCanvasRef.current;
-
-        try {
-            let svgString = '';
-            switch (tipoVisualizacao) {
-                case 'lateral':
-                    svgString = carroceriaSelecionada.lateral_svg || '';
-                    break;
-                case 'traseira':
-                    svgString = carroceriaSelecionada.traseira_svg || '';
-                    break;
-                case 'diagonal':
-                    svgString = carroceriaSelecionada.diagonal_svg || '';
-                    break;
-            }
-
-            if (!svgString) {
-                canvas.clear();
-                return;
-            }
-
-            canvas.clear();
-
-            const { objects, options } = await loadSVGFromString(svgString);
-            const validObjects = objects.filter((obj): obj is FabricObject => obj !== null);
-
-            validObjects.forEach((obj: FabricObject) => {
-                const objId = (obj as any).id;
-                // Procura a peça cujo id_svg está contido no objId
-                const peca = objId
-                    ? pecas.find(p => p.id_svg && objId.toString().includes(p.id_svg.toString()))
-                    : undefined;
-
-                if (peca) {
-                    if (coresAplicadas[peca.id_svg]) {
-                        obj.set('fill', coresAplicadas[peca.id_svg]);
-                    }
-                    (obj as any).data = { id: peca.id_svg };
-                    obj.selectable = true;
-                    obj.hoverCursor = 'pointer';
-                    obj.lockMovementX = true;
-                    obj.lockMovementY = true;
-                    obj.lockScalingX = true;
-                    obj.lockScalingY = true;
-                    obj.lockRotation = true;
-                    obj.hasControls = false;
-                    obj.hasBorders = false;
-                    obj.evented = true;
-                } else {
-                    obj.selectable = false;
-                    obj.evented = false;
-                }
-            });
-
-            const group = util.groupSVGElements(validObjects, options);
-
-            if (tipoVisualizacao === 'traseira') {
-                group.scaleToWidth(canvas.getWidth() * 0.4);
-            } else {
-                group.scaleToWidth(canvas.getWidth() * 0.9);
-            }
-
-            canvas.centerObject(group);
-            group.selectable = false;
-            group.evented = false;
-            canvas.add(group);
-
-            canvas.renderAll();
-
-            if (pecaSelecionada) {
-                const items = (group as Group).getObjects();
-                const novaPeca = items.find((obj: any) => obj.data?.id === pecaSelecionada);
-                if (novaPeca) {
-                    canvas.discardActiveObject();
-                    canvas.renderAll();
-                }
-            }
-        } catch (error) {
-            setError('Erro ao carregar visualização da carroceria.');
-        }
-    };
+    }, [carregarSvgNoCanvas]);
 
     const aplicarCorNaPeca = (cor: string) => {
         if (!pecaSelecionada || !fabricCanvasRef.current) return;
@@ -465,7 +465,7 @@ export function usePintura(navigate?: (path: string) => void) {
         }
     };
 
-    const handleDescartar = () => {
+    const handleDescartar = useCallback(() => {
         const coresIniciais: { [key: string]: string } = {};
         pecas.forEach(peca => {
             if (peca.id_svg && peca.cor_inicial) {
@@ -480,7 +480,7 @@ export function usePintura(navigate?: (path: string) => void) {
         if (carroceriaSelecionada) {
             carregarSvgNoCanvas();
         }
-    };
+    }, [pecas, carroceriaSelecionada, carregarSvgNoCanvas]);
 
     // Render helpers
     const renderCarroceriaSelector = () => (
