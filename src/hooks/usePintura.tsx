@@ -206,9 +206,9 @@ export function usePintura(navigate?: (path: string) => void) {
             const group = util.groupSVGElements(validObjects, options);
 
             if (tipoVisualizacao === 'traseira') {
-                group.scaleToWidth(canvas.getWidth() * 0.4);
+                group.scaleToWidth(canvas.getWidth() * 1.0);
             } else {
-                group.scaleToWidth(canvas.getWidth() * 0.9);
+                group.scaleToWidth(canvas.getWidth() * 1.0);
             }
 
             canvas.centerObject(group);
@@ -276,9 +276,9 @@ export function usePintura(navigate?: (path: string) => void) {
                 if (group) {
                     // Para traseira, não force o zoom!
                     if (tipoVisualizacao === 'traseira') {
-                        group.scaleToWidth(canvasWidth * 0.5);
+                        group.scaleToWidth(canvasWidth * 1.0);
                     } else {
-                        group.scaleToWidth(canvasWidth * 0.9);
+                        group.scaleToWidth(canvasWidth * 1.0);
                     }
                     fabricCanvasRef.current.centerObject(group);
                     fabricCanvasRef.current.renderAll();
