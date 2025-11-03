@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { AvisoModalProps } from '../types/types';
 
 const AvisoModal: React.FC<AvisoModalProps> = ({
@@ -103,7 +103,7 @@ const AvisoModal: React.FC<AvisoModalProps> = ({
 
   return (
     <div
-      className={`modal-backdrop ${className}`}
+      className={className} 
       style={{
         position: 'fixed',
         top: 0,
@@ -121,7 +121,7 @@ const AvisoModal: React.FC<AvisoModalProps> = ({
       onClick={handleBackdropClick}
     >
       <div
-        className="modal-dialog"
+      
         style={{
           backgroundColor: 'white',
           borderRadius: '8px',
@@ -133,6 +133,7 @@ const AvisoModal: React.FC<AvisoModalProps> = ({
           marginTop: '0' 
         }}
         onClick={(e) => e.stopPropagation()}
+      
       >
         {/* Header com cor dinâmica */}
         <div 
@@ -228,25 +229,39 @@ interface UseAvisoModalProps {
 }
 
 export const useAvisoModal = (defaultConfig?: UseAvisoModalProps) => {
-  const [show, setShow] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [config, setConfig] = useState<Partial<AvisoModalProps>>({
-    mostrarFechar: true,
-    mostrarConfirmar: false,
-    mostrarRetry: false,
-    tipo: 'generico',
-    ...defaultConfig
-  });
+  const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const mostrarModal = useCallback((novoConfig: Partial<AvisoModalProps>) => {
-    setConfig(prev => ({ ...prev, ...novoConfig }));
-    setShow(true);
-  }, []);
+  
+  const defaultConfigState = useMemo((): Partial<AvisoModalProps> => {
+    return {
+      mostrarFechar: true,
+      mostrarConfirmar: false,
+      mostrarRetry: false,
+      tipo: 'generico',
+      ...defaultConfig
+    };
+  }, [defaultConfig]);
 
-  const fecharModal = useCallback(() => {
-    setShow(false);
-    setLoading(false);
-  }, []);
+ 
+  const [config, setConfig] = useState<Partial<AvisoModalProps>>(defaultConfigState);
+
+ 
+  const mostrarModal = useCallback((novoConfig: Partial<AvisoModalProps>) => {
+    
+    setConfig({ ...defaultConfigState, ...novoConfig });
+    setShow(true);
+  }, [defaultConfigState]); 
+
+ 
+  const fecharModal = useCallback(() => {
+    setShow(false);
+    setLoading(false);
+    
+    setConfig(defaultConfigState);
+  }, [defaultConfigState]);
+
+ 
 
   const mostrarErro = useCallback((titulo?: string, mensagem?: string) => {
     mostrarModal({
